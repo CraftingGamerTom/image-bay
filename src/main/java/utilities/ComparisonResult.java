@@ -19,7 +19,7 @@ import images.DifferenceImage;
  *
  */
 public class ComparisonResult {
-	final static Logger logger = Logger.getLogger(DifferenceImage.class);
+	final static Logger logger = Logger.getLogger(ComparisonResult.class);
 
 	List<String> comparableImageNames;
 	String alphaImageName;
@@ -53,9 +53,9 @@ public class ComparisonResult {
 		String imageNames = comparableImageNames.toString();
 
 		if (isSame) {
-			logger.info(imageNames + "were all equal to the AlphaImage.");
+			logger.info(imageNames + " were all equal to the AlphaImage.");
 		} else {
-			logger.info(imageNames + "were not ALL equal to AlphaImage.");
+			logger.info(imageNames + " were not ALL equal to AlphaImage.");
 
 			List<String> differenceImageNames = new ArrayList<String>();
 			for (DifferenceImage diff : allDifferenceImages) {

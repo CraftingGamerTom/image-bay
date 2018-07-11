@@ -27,9 +27,10 @@ public class ComparisonOptions {
 	private ImageMask imageMask;
 	private Precision precision;
 	private int errorColor;
-	private Destination destination;
+	private Destination resultsDestination;
 	private String diffImageName;
 	private ImageType imageType;
+	private boolean createMask;
 
 	/**
 	 * Create the ComparisonOptions object with default values
@@ -43,6 +44,9 @@ public class ComparisonOptions {
 	 *           precision = Precision.ABSOLUTE;
 	 *           errorColor = Color.RED.getRGB();
 	 *           destination = null;
+	 *           diffImageName = ">-diff";
+	 *           imageType = ImageType.PNG;
+	 *           createMask = false;
 	 * 
 	 * @category
 	 * 			THE FOLLOWING VARIABLES MUST BE SET BY THE USER:
@@ -57,9 +61,10 @@ public class ComparisonOptions {
 		imageMask = null;
 		precision = Precision.ABSOLUTE;
 		errorColor = Color.RED.getRGB();
-		destination = null;
-		diffImageName = "*-diff";
+		resultsDestination = null;
+		diffImageName = ">-diff";
 		imageType = ImageType.PNG;
+		createMask = false;
 	}
 
 	public int getStartX() {
@@ -118,12 +123,12 @@ public class ComparisonOptions {
 		this.errorColor = errorColor;
 	}
 
-	public Destination getDestination() {
-		return destination;
+	public Destination getResultsDestination() {
+		return resultsDestination;
 	}
 
-	public void setDestination(Destination destination) {
-		this.destination = destination;
+	public void setResultsDestination(Destination destination) {
+		this.resultsDestination = destination;
 	}
 
 	public String getDiffImageName() {
@@ -132,15 +137,31 @@ public class ComparisonOptions {
 
 	/**
 	 * Get the difference image naming convention. We have designated the symbol
-	 * '*' to represent the alpha image's name. It will be inserted at run
+	 * '>' to represent the alpha image's name. It will be inserted at run
 	 * time.
 	 * 
-	 * Ex: "*-diff" will result in "ImageName-diff"
+	 * Ex: ">-diff" will result in "ImageName-diff"
 	 * 
 	 * @param diffImageNaming
 	 */
 	public void setDiffImageName(String diffImageNaming) {
 		this.diffImageName = diffImageNaming;
+	}
+
+	public ImageType getImageType() {
+		return imageType;
+	}
+
+	public void setImageType(ImageType imageType) {
+		this.imageType = imageType;
+	}
+
+	public boolean isCreateMask() {
+		return createMask;
+	}
+
+	public void setCreateMask(boolean createMask) {
+		this.createMask = createMask;
 	}
 
 	/**
@@ -157,8 +178,8 @@ public class ComparisonOptions {
 		int alphaHeight = alphaImage.getImage().getHeight();
 
 		// Update the naming convention
-		options.setDiffImageName(
-				ComparisonOptionsModifier.modifyDiffImageNaming(options.getDiffImageName(), alphaImage.getName()));
+		options.setDiffImageName(options.getDiffImageName().replaceAll(">",
+				alphaImage.getName().substring(0, alphaImage.getName().indexOf('.'))));
 		// Update the EndX
 		options.setEndX(alphaWidth);
 		// Update the EndY
@@ -170,11 +191,4 @@ public class ComparisonOptions {
 		return options;
 	}
 
-	public ImageType getImageType() {
-		return imageType;
-	}
-
-	public void setImageType(ImageType imageType) {
-		this.imageType = imageType;
-	}
 }

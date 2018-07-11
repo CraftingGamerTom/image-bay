@@ -29,7 +29,9 @@ public class Destination {
 	private String path;
 
 	/**
-	 * Create the Destination Object with no destination defined
+	 * Create the Destination Object placeholder with no destination defined
+	 * 
+	 * @see Destination(String path) to create a functioning Destination
 	 */
 	public Destination() {}
 
