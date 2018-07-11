@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
  *
  */
 public enum Precision {
-	ABSOLUTE("1x1", 1, 1), P_20x20("20x20", 20, 20), P_5x5("5x5", 5, 5);
+	ABSOLUTE("absolute", -1, -1), P_20x20("20x20", 20, 20), P_5x5("5x5", 5, 5), P_1x1("1x1", 1, 1);
 
-	final static Logger logger = Logger.getLogger(CompareType.class);
+	final static Logger logger = Logger.getLogger(ImageType.class);
 	private String description;
 	private int width;
 	private int height;

@@ -12,9 +12,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import images.AlphaImage;
-import images.ComparableImage;
-import images.ImageMask;
+import abettor.ImageType;
+import images.CommonImage;
 
 /**
  * Class that stores the location for where an image should be put on the file
@@ -48,67 +47,20 @@ public class Destination {
 	 * 
 	 * @param image
 	 *            to be saved
-	 * @param imageType
-	 *            the type of the image (The file extension - Ex: .png,
-	 *            .bmp, etc)
-	 * @param imageName
-	 *            the name of the image (must include the extension)
 	 */
-	public void writeImage(ComparableImage image, String imageType, String imageName) {
-		try {
-			ImageIO.write(image.getImage(), imageType, new File(path + "\\" + imageName));
-		} catch (IOException ioe) {
-			logger.error(
-					"Could not write the image to the desired destination. Enable debug mode for more information.");
-			if (logger.isDebugEnabled()) {
-				logger.debug("Debug is Enabled.", ioe);
+	public void writeImage(CommonImage image, ImageType imageType) {
+		if (path != null) {
+			try {
+				ImageIO.write(image.getImage(), imageType.getType(), new File(path + "\\" + image.getName()));
+			} catch (IOException ioe) {
+				logger.error(
+						"Could not write the image to the desired destination. Enable debug mode for more information.");
+				if (logger.isDebugEnabled()) {
+					logger.debug("Debug is Enabled.", ioe);
+				}
 			}
-		}
-	}
-
-	/**
-	 * Write to the destination with the specified image name
-	 * 
-	 * @param image
-	 *            to be saved
-	 * @param imageType
-	 *            the type of the image (The file extension - Ex: .png,
-	 *            .bmp, etc)
-	 * @param imageName
-	 *            the name of the image (must include the extension)
-	 */
-	public void writeImage(AlphaImage image, String imageType, String imageName) {
-		try {
-			ImageIO.write(image.getImage(), imageType, new File(path + "\\" + imageName));
-		} catch (IOException ioe) {
-			logger.error(
-					"Could not write the image to the desired destination. Enable debug mode for more information.");
-			if (logger.isDebugEnabled()) {
-				logger.debug("Debug is Enabled.", ioe);
-			}
-		}
-	}
-
-	/**
-	 * Write to the destination with the specified image name
-	 * 
-	 * @param image
-	 *            to be saved
-	 * @param imageType
-	 *            the type of the image (The file extension - Ex: .png,
-	 *            .bmp, etc)
-	 * @param imageName
-	 *            the name of the image (must include the extension)
-	 */
-	public void writeImage(ImageMask image, String imageType, String imageName) {
-		try {
-			ImageIO.write(image.getImage(), imageType, new File(path + "\\" + imageName));
-		} catch (IOException ioe) {
-			logger.error(
-					"Could not write the image to the desired destination. Enable debug mode for more information.");
-			if (logger.isDebugEnabled()) {
-				logger.debug("Debug is Enabled.", ioe);
-			}
+		} else {
+			logger.info("Path for Image to be saved was not defined.");
 		}
 	}
 

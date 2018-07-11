@@ -78,11 +78,11 @@ public class ImageGroup {
 	}
 
 	/**
-	 * Gets the list of comparable images in the image group
+	 * Gets the list of comparable images in the image group.
 	 * 
 	 * @return List<ComparableImage>
 	 */
-	public List<ComparableImage> getComparableImages() {
+	public List<ComparableImage> getAllComparableImages() {
 		return comparableImages;
 	}
 

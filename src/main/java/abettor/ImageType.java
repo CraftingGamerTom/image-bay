@@ -13,14 +13,14 @@ import org.apache.log4j.Logger;
  * @author Thomas Rokicki
  *
  */
-public enum CompareType {
+public enum ImageType {
 	PNG("png", ".png"), BMP("bmp", ".bmp");
 
-	final static Logger logger = Logger.getLogger(CompareType.class);
+	final static Logger logger = Logger.getLogger(ImageType.class);
 	private String type;
 	private String extension;
 
-	CompareType(String type, String extension) {
+	ImageType(String type, String extension) {
 		this.type = type;
 		this.extension = extension;
 	}
@@ -32,7 +32,7 @@ public enum CompareType {
 	 *            (Ex '1x1', '5x5')
 	 * @return
 	 */
-	public static CompareType evaluate(String description) throws IllegalArgumentException {
+	public static ImageType evaluate(String description) throws IllegalArgumentException {
 		if (description.equalsIgnoreCase(PNG.getType())) {
 			return PNG;
 		} else if (description.equalsIgnoreCase(BMP.getType())) {

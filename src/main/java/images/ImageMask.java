@@ -5,7 +5,6 @@
 package images;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 
 /**
  * An image that represents the area that is not to be compared.
@@ -13,20 +12,8 @@ import java.awt.image.RenderedImage;
  * @author Thomas Rokicki
  *
  */
-public class ImageMask {
-
-	private BufferedImage image;
-
-	public ImageMask(BufferedImage image) {
-		this.image = image;
-	}
-
-	/**
-	 * Return the AlphaImage image.
-	 * 
-	 * @return
-	 */
-	public RenderedImage getImage() {
-		return image;
+public class ImageMask extends CommonImage {
+	public ImageMask(BufferedImage image, String imageName) {
+		super(image, imageName);
 	}
 }

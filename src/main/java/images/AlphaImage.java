@@ -5,9 +5,6 @@
 package images;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-
-import org.apache.log4j.Logger;
 
 /**
  * The image that is to be compared against.
@@ -15,22 +12,8 @@ import org.apache.log4j.Logger;
  * @author Thomas Rokicki
  *
  */
-public class AlphaImage {
-	final static Logger logger = Logger.getLogger(AlphaImage.class);
-
-	BufferedImage image;
-
-	public AlphaImage(BufferedImage image) {
-		this.image = image;
+public class AlphaImage extends CommonImage {
+	public AlphaImage(BufferedImage image, String imageName) {
+		super(image, imageName);
 	}
-
-	/**
-	 * Return the AlphaImage image.
-	 * 
-	 * @return
-	 */
-	public RenderedImage getImage() {
-		return image;
-	}
-
 }

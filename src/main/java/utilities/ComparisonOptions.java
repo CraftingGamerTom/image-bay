@@ -4,7 +4,12 @@
 
 package utilities;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+
+import abettor.ImageType;
 import abettor.Precision;
+import images.AlphaImage;
 import images.ImageMask;
 
 /**
@@ -23,8 +28,39 @@ public class ComparisonOptions {
 	private Precision precision;
 	private int errorColor;
 	private Destination destination;
+	private String diffImageName;
+	private ImageType imageType;
 
-	public ComparisonOptions() {}
+	/**
+	 * Create the ComparisonOptions object with default values
+	 * 
+	 * @category
+	 * 			startX = -1;
+	 *           startY = -1;
+	 *           endX = -1;
+	 *           endY = -1;
+	 *           imageMask = null;
+	 *           precision = Precision.ABSOLUTE;
+	 *           errorColor = Color.RED.getRGB();
+	 *           destination = null;
+	 * 
+	 * @category
+	 * 			THE FOLLOWING VARIABLES MUST BE SET BY THE USER:
+	 *           Destination
+	 * 
+	 */
+	public ComparisonOptions() {
+		startX = 0;
+		startY = 0;
+		endX = -1;
+		endY = -1;
+		imageMask = null;
+		precision = Precision.ABSOLUTE;
+		errorColor = Color.RED.getRGB();
+		destination = null;
+		diffImageName = "*-diff";
+		imageType = ImageType.PNG;
+	}
 
 	public int getStartX() {
 		return startX;
@@ -88,5 +124,57 @@ public class ComparisonOptions {
 
 	public void setDestination(Destination destination) {
 		this.destination = destination;
+	}
+
+	public String getDiffImageName() {
+		return diffImageName;
+	}
+
+	/**
+	 * Get the difference image naming convention. We have designated the symbol
+	 * '*' to represent the alpha image's name. It will be inserted at run
+	 * time.
+	 * 
+	 * Ex: "*-diff" will result in "ImageName-diff"
+	 * 
+	 * @param diffImageNaming
+	 */
+	public void setDiffImageName(String diffImageNaming) {
+		this.diffImageName = diffImageNaming;
+	}
+
+	/**
+	 * When the ComparisonOptions are about to be used, this method should be
+	 * called to ensure the required values are valid and are no longer default.
+	 * 
+	 * @param options
+	 * @param alphaImage
+	 * @return
+	 */
+	public static ComparisonOptions validateDefaults(ComparisonOptions options, AlphaImage alphaImage) {
+		// Alpha Image Size for size comparing
+		int alphaWidth = alphaImage.getImage().getWidth();
+		int alphaHeight = alphaImage.getImage().getHeight();
+
+		// Update the naming convention
+		options.setDiffImageName(
+				ComparisonOptionsModifier.modifyDiffImageNaming(options.getDiffImageName(), alphaImage.getName()));
+		// Update the EndX
+		options.setEndX(alphaWidth);
+		// Update the EndY
+		options.setEndY(alphaHeight);
+		// Update the ImageMask
+		options.setImageMask(
+				new ImageMask(new BufferedImage(alphaWidth, alphaHeight, alphaImage.getType()), "EmptyMask"));
+
+		return options;
+	}
+
+	public ImageType getImageType() {
+		return imageType;
+	}
+
+	public void setImageType(ImageType imageType) {
+		this.imageType = imageType;
 	}
 }
