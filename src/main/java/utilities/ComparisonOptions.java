@@ -70,6 +70,11 @@ public class ComparisonOptions {
 		return startX;
 	}
 
+	/**
+	 * Set the X value to start comparing
+	 * 
+	 * @param startX
+	 */
 	public void setStartX(int startX) {
 		this.startX = startX;
 	}
@@ -78,6 +83,11 @@ public class ComparisonOptions {
 		return startY;
 	}
 
+	/**
+	 * Set the Y value to start comparing
+	 * 
+	 * @param startY
+	 */
 	public void setStartY(int startY) {
 		this.startY = startY;
 	}
@@ -86,6 +96,11 @@ public class ComparisonOptions {
 		return endX;
 	}
 
+	/**
+	 * Set the X value to stop comparing at
+	 * 
+	 * @param endX
+	 */
 	public void setEndX(int endX) {
 		this.endX = endX;
 	}
@@ -94,6 +109,11 @@ public class ComparisonOptions {
 		return endY;
 	}
 
+	/**
+	 * Set the Y value to stop comparing at
+	 * 
+	 * @param endY
+	 */
 	public void setEndY(int endY) {
 		this.endY = endY;
 	}
@@ -102,6 +122,11 @@ public class ComparisonOptions {
 		return imageMask;
 	}
 
+	/**
+	 * Set the image that will be used at the mask when comparing
+	 * 
+	 * @param imageMask
+	 */
 	public void setImageMask(ImageMask imageMask) {
 		this.imageMask = imageMask;
 	}
@@ -110,6 +135,11 @@ public class ComparisonOptions {
 		return precision;
 	}
 
+	/**
+	 * Set the block size to check
+	 * 
+	 * @param precision
+	 */
 	public void setPrecision(Precision precision) {
 		this.precision = precision;
 	}
@@ -118,6 +148,11 @@ public class ComparisonOptions {
 		return errorColor;
 	}
 
+	/**
+	 * Set the color that will be used to mark differences in images.
+	 * 
+	 * @param errorColor
+	 */
 	public void setErrorColor(int errorColor) {
 		this.errorColor = errorColor;
 	}
@@ -126,6 +161,11 @@ public class ComparisonOptions {
 		return resultsDestination;
 	}
 
+	/**
+	 * Set the destination where the difference images should be saved.
+	 * 
+	 * @param destination
+	 */
 	public void setResultsDestination(Destination destination) {
 		this.resultsDestination = destination;
 	}
@@ -151,6 +191,11 @@ public class ComparisonOptions {
 		return imageType;
 	}
 
+	/**
+	 * Set the extension of the image.
+	 * 
+	 * @param imageType
+	 */
 	public void setImageType(ImageType imageType) {
 		this.imageType = imageType;
 	}
@@ -159,6 +204,15 @@ public class ComparisonOptions {
 		return createMask;
 	}
 
+	/**
+	 * Set whether a mask should be created or not.
+	 * Default is false
+	 * 
+	 * If this is set to true, the difference image will not have the original
+	 * image behind it. The background will be transparent.
+	 * 
+	 * @param createMask
+	 */
 	public void setCreateMask(boolean createMask) {
 		this.createMask = createMask;
 	}
