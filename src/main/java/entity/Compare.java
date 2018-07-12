@@ -18,6 +18,7 @@ import utilities.ComparableGroup;
 import utilities.ComparisonOptions;
 import utilities.ComparisonResult;
 import utilities.ImageGroup;
+import utilities.PixelCheckResults;
 
 public class Compare {
 	final static Logger logger = Logger.getLogger(Compare.class);
@@ -154,6 +155,8 @@ public class Compare {
 			// Put the Image name in the list for the result
 			comparableImageNames.add(imageToCompare.getName());
 
+			// TODO Move to a different method
+
 			// ComparableImage Size for size comparison
 			int imageWidth = imageToCompare.getImage().getWidth();
 			int imageHeight = imageToCompare.getImage().getHeight();
@@ -248,44 +251,37 @@ public class Compare {
 										// logger.debug("Checking pixel: " +
 										// blockX + ", " + blockY);
 
-										// Ensure the area is not masked
-										if (bufferedImageMask.getRGB(blockX, blockY) == Color.TRANSLUCENT) {
+										PixelCheckResults pixelCheckResults = null;
 
+										// Ensure the area is not masked
+										if (bufferedImageMask == null) {
 											// logger.debug("Not a masked
 											// pixel.");
 
-											// Handle different pixel
-											if (bufferedImageToCompare.getRGB(blockX, blockY) != bufferedAlphaImage
-													.getRGB(blockX, blockY)) {
+											pixelCheckResults = checkthePixel(bufferedImageToCompare,
+													bufferedAlphaImage, theDiffImage, comparisonOptions, precisionWidth,
+													precisionHeight, pageX, pageY, blockX, blockY);
+										} else if (bufferedImageMask.getRGB(blockX, blockY) == Color.TRANSLUCENT) {
+											// logger.debug("Not a masked
+											// pixel.");
 
-												// logger.debug("Pixel does not
-												// match.");
+											pixelCheckResults = checkthePixel(bufferedImageToCompare,
+													bufferedAlphaImage, theDiffImage, comparisonOptions, precisionWidth,
+													precisionHeight, pageX, pageY, blockX, blockY);
 
+										}
+
+										if (pixelCheckResults != null) {
+											// Flag to stop crawling this block
+											innerErrorFound = pixelCheckResults.isErrorFound();
+											if (innerErrorFound) {
 												// Set Overall Flag
 												isSame = false;
-
-												for (int modifyBlockX = pageX; modifyBlockX < (pageX + precisionWidth)
-														&& blockX < comparisonOptions.getEndX(); modifyBlockX++) {
-													for (int modifyBlockY = pageY; modifyBlockY < (pageY
-															+ precisionHeight)
-															&& blockY < comparisonOptions.getEndY(); modifyBlockY++) {
-
-														// logger.debug("Marking
-														// errored pixel: " +
-														// modifyBlockX + ", "
-														// + modifyBlockY);
-
-														// Set the Error area
-														theDiffImage.setRGB(modifyBlockX, modifyBlockY,
-																comparisonOptions.getErrorColor());
-													}
-												}
-												// Flag to stop crawling this
-												// block
-												innerErrorFound = true;
 												break;
+
 											}
 										}
+
 									}
 								}
 							} else {
@@ -323,6 +319,50 @@ public class Compare {
 		ComparisonResult result = new ComparisonResult(comparableImageNames, alphaImage.getName(), isSame,
 				allDifferenceImages);
 		return result;
+	}
+
+	/**
+	 * Compare the pixels based on its x & y and update the difference image if
+	 * there was an unmatching pixel.
+	 * 
+	 * @param bufferedImageToCompare
+	 * @param bufferedAlphaImage
+	 * @param diffImage
+	 * @param comparisonOptions
+	 * @param precisionWidth
+	 * @param precisionHeight
+	 * @param pageX
+	 * @param pageY
+	 * @param blockX
+	 * @param blockY
+	 * @return
+	 */
+	private PixelCheckResults checkthePixel(BufferedImage bufferedImageToCompare, BufferedImage bufferedAlphaImage,
+			BufferedImage diffImage, ComparisonOptions comparisonOptions, int precisionWidth, int precisionHeight,
+			int pageX, int pageY, int blockX, int blockY) {
+
+		boolean errorFound = false;
+
+		// Handle different pixel
+		if (bufferedImageToCompare.getRGB(blockX, blockY) != bufferedAlphaImage.getRGB(blockX, blockY)) {
+
+			// logger.debug("Pixel does not match.");
+
+			for (int modifyBlockX = pageX; modifyBlockX < (pageX + precisionWidth)
+					&& blockX < comparisonOptions.getEndX(); modifyBlockX++) {
+				for (int modifyBlockY = pageY; modifyBlockY < (pageY + precisionHeight)
+						&& blockY < comparisonOptions.getEndY(); modifyBlockY++) {
+
+					errorFound = true;
+					// logger.debug("Marking errored pixel: " + modifyBlockX +
+					// ", " + modifyBlockY);
+
+					// Set the Error area
+					diffImage.setRGB(modifyBlockX, modifyBlockY, comparisonOptions.getErrorColor());
+				}
+			}
+		}
+		return new PixelCheckResults(diffImage, errorFound);
 	}
 
 }

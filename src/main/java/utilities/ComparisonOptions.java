@@ -5,7 +5,6 @@
 package utilities;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 
 import abettor.ImageType;
 import abettor.Precision;
@@ -185,8 +184,9 @@ public class ComparisonOptions {
 		// Update the EndY
 		options.setEndY(alphaHeight);
 		// Update the ImageMask
-		options.setImageMask(
-				new ImageMask(new BufferedImage(alphaWidth, alphaHeight, alphaImage.getType()), "EmptyMask"));
+		if (options.getImageMask() == null) {
+			options.setImageMask(new ImageMask(null, "NullMask"));
+		}
 
 		return options;
 	}
