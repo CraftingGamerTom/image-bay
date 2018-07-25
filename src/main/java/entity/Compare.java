@@ -11,9 +11,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import images.AlphaImage;
 import images.ComparableImage;
 import images.DifferenceImage;
+import images.PrimordialImage;
 import utilities.ComparableGroup;
 import utilities.ComparisonOptions;
 import utilities.ComparisonResult;
@@ -30,16 +30,16 @@ public class Compare {
 	}
 
 	/**
-	 * Puts image into the list to be compared against the alpha image.
+	 * Puts image into the list to be compared against the primordial image.
 	 * 
 	 * By default the images will be compared absolutely. One different pixel
 	 * will return false
 	 * 
 	 * @param comparableImage
-	 * @param alphaImage
+	 * @param primordialImage
 	 */
-	public void putComparableImage(ComparableImage comparableImage, AlphaImage alphaImage) {
-		ImageGroup imageGroup = new ImageGroup(comparableImage, alphaImage);
+	public void putComparableImage(ComparableImage comparableImage, PrimordialImage primordialImage) {
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
 		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, new ComparisonOptions());
 
 		listToCompare.add(comparableGroup);
@@ -48,16 +48,17 @@ public class Compare {
 
 	/**
 	 * 
-	 * Puts image into the list to be compared against the alpha image.
+	 * Puts image into the list to be compared against the primordial image.
 	 * 
 	 * @param comparableImage
-	 * @param alphaImage
+	 * @param primordialImage
 	 * @param options
 	 *            The options that will specifically be used to compare the two
 	 *            images provided
 	 */
-	public void putComparableImage(ComparableImage comparableImage, AlphaImage alphaImage, ComparisonOptions options) {
-		ImageGroup imageGroup = new ImageGroup(comparableImage, alphaImage);
+	public void putComparableImage(ComparableImage comparableImage, PrimordialImage primordialImage,
+			ComparisonOptions options) {
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
 		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
 
 		listToCompare.add(comparableGroup);
@@ -65,13 +66,13 @@ public class Compare {
 
 	/**
 	 * Put all the comparable images into the list to be compared against the
-	 * alpha image
+	 * primordial image
 	 * 
 	 * @param comparableImageList
-	 * @param alphaImage
+	 * @param primordialImage
 	 */
-	public void putAllComparableImages(List<ComparableImage> comparableImageList, AlphaImage alphaImage) {
-		ImageGroup imageGroup = new ImageGroup(comparableImageList, alphaImage);
+	public void putAllComparableImages(List<ComparableImage> comparableImageList, PrimordialImage primordialImage) {
+		ImageGroup imageGroup = new ImageGroup(comparableImageList, primordialImage);
 		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, new ComparisonOptions());
 
 		listToCompare.add(comparableGroup);
@@ -79,15 +80,15 @@ public class Compare {
 
 	/**
 	 * Put all the comparable images into the list to be compared against the
-	 * alpha image
+	 * primordial image
 	 * 
 	 * @param comparableImageList
-	 * @param alphaImage
+	 * @param primordialImage
 	 * @param options
 	 */
-	public void putAllComparableImages(List<ComparableImage> comparableImageList, AlphaImage alphaImage,
+	public void putAllComparableImages(List<ComparableImage> comparableImageList, PrimordialImage primordialImage,
 			ComparisonOptions options) {
-		ImageGroup imageGroup = new ImageGroup(comparableImageList, alphaImage);
+		ImageGroup imageGroup = new ImageGroup(comparableImageList, primordialImage);
 		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
 
 		listToCompare.add(comparableGroup);
@@ -123,9 +124,9 @@ public class Compare {
 	}
 
 	/**
-	 * Compare all the comparable images to the alpha image
+	 * Compare all the comparable images to the primordial image
 	 * 
-	 * If the comparable image is the same as the alpha image then a difference
+	 * If the comparable image is the same as the primordial image then a difference
 	 * image is not created
 	 * 
 	 * @param comparableGroup
@@ -140,16 +141,16 @@ public class Compare {
 		// Get Images
 		ImageGroup imageGroup = comparableGroup.getImageGroup();
 		List<ComparableImage> comparableImages = imageGroup.getAllComparableImages();
-		AlphaImage alphaImage = imageGroup.getAlphaImage();
+		PrimordialImage primordialImage = imageGroup.getPrimordialImage();
 		// Get Options
 		ComparisonOptions comparisonOptions = ComparisonOptions.validateDefaults(comparableGroup.getComparisonOptions(),
-				alphaImage);
+				primordialImage);
 
-		// Alpha Image Size for size comparing
-		int alphaWidth = alphaImage.getImage().getWidth();
-		int alphaHeight = alphaImage.getImage().getHeight();
+		// Primordial Image Size for size comparing
+		int primordialWidth = primordialImage.getImage().getWidth();
+		int primordialHeight = primordialImage.getImage().getHeight();
 
-		// Iterate through each Comparable Image to compare to the Alpha
+		// Iterate through each Comparable Image to compare to the Primordial
 		for (ComparableImage imageToCompare : comparableImages) {
 			logger.debug("-- Comparing --");
 			// Put the Image name in the list for the result
@@ -162,17 +163,17 @@ public class Compare {
 			int imageHeight = imageToCompare.getImage().getHeight();
 
 			// Compare the image sizes
-			if (imageWidth == alphaWidth && imageHeight == alphaHeight) {
+			if (imageWidth == primordialWidth && imageHeight == primordialHeight) {
 
 				// Get actual images
 				BufferedImage bufferedImageToCompare = imageToCompare.getImage();
-				BufferedImage bufferedAlphaImage = alphaImage.getImage();
+				BufferedImage bufferedPrimordialImage = primordialImage.getImage();
 				BufferedImage bufferedImageMask = comparisonOptions.getImageMask().getImage();
 
 				// Determine whether to create a Diff or a Mask
 				BufferedImage theDiffImage;
 				if (comparisonOptions.isCreateMask()) {
-					theDiffImage = new BufferedImage(alphaWidth, alphaHeight, alphaImage.getType());
+					theDiffImage = new BufferedImage(primordialWidth, primordialHeight, primordialImage.getType());
 				} else {
 					theDiffImage = imageToCompare.getImage();
 				}
@@ -259,15 +260,15 @@ public class Compare {
 											// pixel.");
 
 											pixelCheckResults = checkthePixel(bufferedImageToCompare,
-													bufferedAlphaImage, theDiffImage, comparisonOptions, precisionWidth,
-													precisionHeight, pageX, pageY, blockX, blockY);
+													bufferedPrimordialImage, theDiffImage, comparisonOptions,
+													precisionWidth, precisionHeight, pageX, pageY, blockX, blockY);
 										} else if (bufferedImageMask.getRGB(blockX, blockY) == Color.TRANSLUCENT) {
 											// logger.debug("Not a masked
 											// pixel.");
 
 											pixelCheckResults = checkthePixel(bufferedImageToCompare,
-													bufferedAlphaImage, theDiffImage, comparisonOptions, precisionWidth,
-													precisionHeight, pageX, pageY, blockX, blockY);
+													bufferedPrimordialImage, theDiffImage, comparisonOptions,
+													precisionWidth, precisionHeight, pageX, pageY, blockX, blockY);
 
 										}
 
@@ -309,14 +310,14 @@ public class Compare {
 							comparisonOptions.getImageType());
 				}
 
-			} else { // Comparable image is not the same size as the alpha
-				logger.info("Image " + alphaImage.getName() + " is not the same size as the Alpha Image.");
+			} else { // Comparable image is not the same size as the primordial
+				logger.info("Image " + primordialImage.getName() + " is not the same size as the Primordial Image.");
 				// Set Flag
 				isSame = false;
 			}
 		}
 
-		ComparisonResult result = new ComparisonResult(comparableImageNames, alphaImage.getName(), isSame,
+		ComparisonResult result = new ComparisonResult(comparableImageNames, primordialImage.getName(), isSame,
 				allDifferenceImages);
 		return result;
 	}
@@ -326,7 +327,7 @@ public class Compare {
 	 * there was an unmatching pixel.
 	 * 
 	 * @param bufferedImageToCompare
-	 * @param bufferedAlphaImage
+	 * @param bufferedPrimordialImage
 	 * @param diffImage
 	 * @param comparisonOptions
 	 * @param precisionWidth
@@ -337,14 +338,14 @@ public class Compare {
 	 * @param blockY
 	 * @return
 	 */
-	private PixelCheckResults checkthePixel(BufferedImage bufferedImageToCompare, BufferedImage bufferedAlphaImage,
+	private PixelCheckResults checkthePixel(BufferedImage bufferedImageToCompare, BufferedImage bufferedPrimordialImage,
 			BufferedImage diffImage, ComparisonOptions comparisonOptions, int precisionWidth, int precisionHeight,
 			int pageX, int pageY, int blockX, int blockY) {
 
 		boolean errorFound = false;
 
 		// Handle different pixel
-		if (bufferedImageToCompare.getRGB(blockX, blockY) != bufferedAlphaImage.getRGB(blockX, blockY)) {
+		if (bufferedImageToCompare.getRGB(blockX, blockY) != bufferedPrimordialImage.getRGB(blockX, blockY)) {
 
 			// logger.debug("Pixel does not match.");
 

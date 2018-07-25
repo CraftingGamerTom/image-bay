@@ -22,7 +22,7 @@ public class ComparisonResult {
 	final static Logger logger = Logger.getLogger(ComparisonResult.class);
 
 	List<String> comparableImageNames;
-	String alphaImageName;
+	String primordialImageName;
 	boolean isSame;
 	List<DifferenceImage> allDifferenceImages;
 
@@ -31,17 +31,17 @@ public class ComparisonResult {
 	 * 
 	 * @param comparableImageNames
 	 *            The comparable image names
-	 * @param alphaImageName
-	 *            the alpha image name
+	 * @param primordialImageName
+	 *            the primordial image name
 	 * @param isSame
-	 *            Were all the comparable images the same as the alpha
+	 *            Were all the comparable images the same as the primordial
 	 * @param differenceImage
 	 *            An image that represents the differences in the images
 	 */
-	public ComparisonResult(List<String> comparableImageNames, String alphaImageName, boolean isSame,
+	public ComparisonResult(List<String> comparableImageNames, String primordialImageName, boolean isSame,
 			List<DifferenceImage> allDifferenceImages) {
 		this.comparableImageNames = comparableImageNames;
-		this.alphaImageName = alphaImageName;
+		this.primordialImageName = primordialImageName;
 		this.isSame = isSame;
 		this.allDifferenceImages = allDifferenceImages;
 	}
@@ -53,9 +53,9 @@ public class ComparisonResult {
 		String imageNames = comparableImageNames.toString();
 
 		if (isSame) {
-			logger.info(imageNames + " were all equal to the AlphaImage.");
+			logger.info(imageNames + " were all equal to the PrimordialImage.");
 		} else {
-			logger.info(imageNames + " were not ALL equal to AlphaImage.");
+			logger.info(imageNames + " were not ALL equal to PrimordialImage.");
 
 			List<String> differenceImageNames = new ArrayList<String>();
 			for (DifferenceImage diff : allDifferenceImages) {
@@ -68,7 +68,7 @@ public class ComparisonResult {
 
 	/**
 	 * Get the DifferenceImage containing the differences between the comparable
-	 * image and the alpha image
+	 * image and the primordial image
 	 * 
 	 * @return DifferenceImage
 	 */
@@ -79,7 +79,7 @@ public class ComparisonResult {
 	/**
 	 * Get all the DifferenceImage objects containing the differences between
 	 * the comparable
-	 * image and the alpha image
+	 * image and the primordial image
 	 * 
 	 * @return DifferenceImage
 	 */
@@ -90,7 +90,8 @@ public class ComparisonResult {
 	/**
 	 * A boolean representation of the comparison result
 	 * 
-	 * @return true if all comparable images match the alpha image, false if any
+	 * @return true if all comparable images match the primordial image, false if
+	 *         any
 	 *         are not the same
 	 */
 	public boolean isMatching() {

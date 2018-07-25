@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * The image that is created to display the differences between the comparable
- * images and the alpha image
+ * images and the Primordial image
  * 
  * @author Thomas Rokicki
  *

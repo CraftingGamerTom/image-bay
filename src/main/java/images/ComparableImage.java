@@ -7,7 +7,7 @@ package images;
 import java.awt.image.BufferedImage;
 
 /**
- * Image that is to be compared to the alpha image
+ * Image that is to be compared to the Primordial image
  * 
  * @author Thomas Rokicki
  *

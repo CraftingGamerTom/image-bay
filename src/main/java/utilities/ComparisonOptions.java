@@ -8,8 +8,8 @@ import java.awt.Color;
 
 import abettor.ImageType;
 import abettor.Precision;
-import images.AlphaImage;
 import images.ImageMask;
+import images.PrimordialImage;
 
 /**
  * Class to maintain all the set options for the comparison
@@ -176,7 +176,7 @@ public class ComparisonOptions {
 
 	/**
 	 * Get the difference image naming convention. We have designated the symbol
-	 * '>' to represent the alpha image's name. It will be inserted at run
+	 * '>' to represent the primordial image's name. It will be inserted at run
 	 * time.
 	 * 
 	 * Ex: ">-diff" will result in "ImageName-diff"
@@ -222,21 +222,21 @@ public class ComparisonOptions {
 	 * called to ensure the required values are valid and are no longer default.
 	 * 
 	 * @param options
-	 * @param alphaImage
+	 * @param primordialImage
 	 * @return
 	 */
-	public static ComparisonOptions validateDefaults(ComparisonOptions options, AlphaImage alphaImage) {
-		// Alpha Image Size for size comparing
-		int alphaWidth = alphaImage.getImage().getWidth();
-		int alphaHeight = alphaImage.getImage().getHeight();
+	public static ComparisonOptions validateDefaults(ComparisonOptions options, PrimordialImage primordialImage) {
+		// Primordial Image Size for size comparing
+		int primordialWidth = primordialImage.getImage().getWidth();
+		int primordialHeight = primordialImage.getImage().getHeight();
 
 		// Update the naming convention
 		options.setDiffImageName(options.getDiffImageName().replaceAll(">",
-				alphaImage.getName().substring(0, alphaImage.getName().indexOf('.'))));
+				primordialImage.getName().substring(0, primordialImage.getName().indexOf('.'))));
 		// Update the EndX
-		options.setEndX(alphaWidth);
+		options.setEndX(primordialWidth);
 		// Update the EndY
-		options.setEndY(alphaHeight);
+		options.setEndY(primordialHeight);
 		// Update the ImageMask
 		if (options.getImageMask() == null) {
 			options.setImageMask(new ImageMask(null, "NullMask"));
