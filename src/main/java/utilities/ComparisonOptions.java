@@ -7,7 +7,7 @@ package utilities;
 import java.awt.Color;
 
 import abettor.ImageType;
-import abettor.Precision;
+import abettor.PixelGroupSize;
 import images.ImageMask;
 import images.PrimordialImage;
 
@@ -24,7 +24,7 @@ public class ComparisonOptions {
 	private int endX;
 	private int endY;
 	private ImageMask imageMask;
-	private Precision precision;
+	private PixelGroupSize pixelGroupSize;
 	private int errorColor;
 	private Destination resultsDestination;
 	private String diffImageName;
@@ -40,7 +40,7 @@ public class ComparisonOptions {
 	 *           endX = -1;
 	 *           endY = -1;
 	 *           imageMask = null;
-	 *           precision = Precision.ABSOLUTE;
+	 *           pixelGroupSize = PixelGroupSize.ABSOLUTE;
 	 *           errorColor = Color.RED.getRGB();
 	 *           destination = null;
 	 *           diffImageName = ">-diff";
@@ -58,7 +58,7 @@ public class ComparisonOptions {
 		endX = -1;
 		endY = -1;
 		imageMask = null;
-		precision = Precision.ABSOLUTE;
+		pixelGroupSize = PixelGroupSize.ABSOLUTE;
 		errorColor = Color.RED.getRGB();
 		resultsDestination = null;
 		diffImageName = ">-diff";
@@ -131,17 +131,17 @@ public class ComparisonOptions {
 		this.imageMask = imageMask;
 	}
 
-	public Precision getPrecision() {
-		return precision;
+	public PixelGroupSize getPixelGroupSize() {
+		return pixelGroupSize;
 	}
 
 	/**
 	 * Set the block size to check
 	 * 
-	 * @param precision
+	 * @param pixelGroupSize
 	 */
-	public void setPrecision(Precision precision) {
-		this.precision = precision;
+	public void setPixelGroupSize(PixelGroupSize pixelGroupSize) {
+		this.pixelGroupSize = pixelGroupSize;
 	}
 
 	public int getErrorColor() {
