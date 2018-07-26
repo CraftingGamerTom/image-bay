@@ -25,7 +25,7 @@ public class ComparisonOptions {
 	private int endY;
 	private ImageMask imageMask;
 	private PixelGroupSize pixelGroupSize;
-	private int errorColor;
+	private Color errorColor;
 	private Destination resultsDestination;
 	private String diffImageName;
 	private ImageType imageType;
@@ -59,7 +59,7 @@ public class ComparisonOptions {
 		endY = -1;
 		imageMask = null;
 		pixelGroupSize = PixelGroupSize.ABSOLUTE;
-		errorColor = Color.RED.getRGB();
+		errorColor = Color.RED;
 		resultsDestination = null;
 		diffImageName = ">-diff";
 		imageType = ImageType.PNG;
@@ -144,7 +144,7 @@ public class ComparisonOptions {
 		this.pixelGroupSize = pixelGroupSize;
 	}
 
-	public int getErrorColor() {
+	public Color getErrorColor() {
 		return errorColor;
 	}
 
@@ -153,7 +153,7 @@ public class ComparisonOptions {
 	 * 
 	 * @param errorColor
 	 */
-	public void setErrorColor(int errorColor) {
+	public void setErrorColor(Color errorColor) {
 		this.errorColor = errorColor;
 	}
 
