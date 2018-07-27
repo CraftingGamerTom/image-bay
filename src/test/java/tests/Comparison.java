@@ -25,13 +25,13 @@ public class Comparison {
 
 	// Access Destination
 	private static Destination primordialImageDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/" + "primordial-images");
+			Comparison.class.getClassLoader().getResource("primordial-images").getPath());
 	private static Destination comparableImageDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/" + "comparable-images");
+			Comparison.class.getClassLoader().getResource("comparable-images").getPath());
 	private static Destination maskDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/" + "mask-images");
+			Comparison.class.getClassLoader().getResource("mask-images").getPath());
 	private static Destination resultsDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/" + "results");
+			Comparison.class.getClassLoader().getResource("results").getPath());
 
 	/**
 	 * Test that two identical images are found to be the same
