@@ -86,4 +86,9 @@ public class Destination {
 		return image;
 	}
 
+	@Override
+	public String toString() {
+		return path;
+	}
+
 }

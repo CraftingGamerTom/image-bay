@@ -135,180 +135,22 @@ public class Compare {
 	 */
 	private ComparisonResult compare(ComparableGroup comparableGroup) {
 		logger.debug("Begin comparing images.");
-		List<String> comparableImageNames = new ArrayList<String>();
-		boolean isSame = true; // flag
-		List<DifferenceImage> allDifferenceImages = new ArrayList<DifferenceImage>();
+		CompareVariables variables = new CompareVariables();
 
 		// Get Images
 		ImageGroup imageGroup = comparableGroup.getImageGroup();
-		List<ComparableImage> comparableImages = imageGroup.getAllComparableImages();
-		PrimordialImage primordialImage = imageGroup.getPrimordialImage();
-		// Get Options
-		ComparisonOptions comparisonOptions = ComparisonOptions.validateDefaults(comparableGroup.getComparisonOptions(),
-				primordialImage);
 
-		// Primordial Image Size for size comparing
-		int primordialWidth = primordialImage.getImage().getWidth();
-		int primordialHeight = primordialImage.getImage().getHeight();
+		// Setup
+		variables.setPrimordialImage(imageGroup.getPrimordialImage());
+		variables.setComparisonOptions(ComparisonOptions.validateDefaults(comparableGroup.getComparisonOptions(),
+				variables.getPrimordialImage()));
 
 		// Iterate through each Comparable Image to compare to the Primordial
-		for (ComparableImage imageToCompare : comparableImages) {
-			logger.debug("-- Comparing --");
-			// Put the Image name in the list for the result
-			comparableImageNames.add(imageToCompare.getName());
+		compareEachComparableImage(variables, imageGroup.getAllComparableImages());
 
-			// ComparableImage Size for size comparison
-			int imageWidth = imageToCompare.getImage().getWidth();
-			int imageHeight = imageToCompare.getImage().getHeight();
-
-			// Compare the image sizes
-			if (imageWidth == primordialWidth && imageHeight == primordialHeight) {
-
-				// Get actual images
-				BufferedImage bufferedImageToCompare = imageToCompare.getImage();
-				BufferedImage bufferedPrimordialImage = primordialImage.getImage();
-				BufferedImage bufferedImageMask = comparisonOptions.getImageMask().getImage();
-
-				// Determine whether to create a Diff or a Mask
-				BufferedImage theDiffImage;
-				if (comparisonOptions.isCreateMask()) {
-					// Create a transparent image to be marked
-					theDiffImage = new BufferedImage(primordialWidth, primordialHeight, primordialImage.getType());
-				} else {
-					// Use primordial image as background
-					theDiffImage = imageToCompare.getImage();
-				}
-
-				// Ensure the PixelGroupSize is valid
-				int pixelGroupWidth = getPixelGroupWidth(comparisonOptions, imageWidth);
-				int pixelGroupHeight = getPixelGroupHeight(comparisonOptions, imageHeight);
-
-				// Determine Block ratio of area being compared
-				int widthBlocksCount = (comparisonOptions.getEndX() - comparisonOptions.getStartX()) / pixelGroupWidth;
-				int heightBlocksCount = (comparisonOptions.getEndY() - comparisonOptions.getStartY())
-						/ pixelGroupHeight;
-
-				// Determine what is left over on the edge of the image
-				// int widthBlocksRemainder = (comparisonOptions.getStartY() -
-				// comparisonOptions.getStartX())
-				// % comparisonOptions.getPixelGroupSize().getWidth();
-				// int heightBlocksRemainder = (comparisonOptions.getEndY() -
-				// comparisonOptions.getEndY())
-				// % comparisonOptions.getPixelGroupSize().getHeight();
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("Width block count: " + widthBlocksCount);
-					logger.debug("Height block count: " + heightBlocksCount);
-
-					logger.debug("Start X: " + comparisonOptions.getStartX());
-					logger.debug("Start Y: " + comparisonOptions.getStartY());
-					logger.debug("End X: " + comparisonOptions.getEndX());
-					logger.debug("End Y: " + comparisonOptions.getEndY());
-				}
-
-				// Define Counters
-				int pageX = comparisonOptions.getStartX();
-				int pageY = comparisonOptions.getStartY();
-
-				// Crawl the complete blocks X
-				while (pageX < comparisonOptions.getEndX()) {
-
-					// logger.debug("PageX: " + pageX);
-
-					pageY = comparisonOptions.getStartY(); // reset counter
-					// Crawl the complete blocks Y
-					while (pageY < comparisonOptions.getEndY()) {
-
-						// logger.debug("PageY: " + pageY);
-
-						/*
-						 * flag to ensure the work is not repeated when error is
-						 * found.
-						 */
-						boolean innerErrorFound = false;
-
-						// Crawl inner block X
-						for (int blockX = pageX; blockX < (pageX + pixelGroupWidth)
-								&& blockX < comparisonOptions.getEndX(); blockX++) {
-
-							// logger.debug("BlockX: " + blockX);
-
-							// Ensure an error was not found and already handled
-							if (!innerErrorFound) {
-								// Crawl inner block Y
-								for (int blockY = pageY; blockY < (pageY + pixelGroupHeight)
-										&& blockY < comparisonOptions.getEndY(); blockY++) {
-
-									// logger.debug("BlockY: " + blockY);
-
-									// logger.debug("Checking pixel: " +
-									// blockX + ", " + blockY);
-
-									PixelCheckResults pixelCheckResults = null;
-
-									// Ensure the area is not masked
-									if (bufferedImageMask == null) {
-										// logger.debug("Not a masked
-										// pixel.");
-
-										pixelCheckResults = checkthePixel(bufferedImageToCompare,
-												bufferedPrimordialImage, theDiffImage, comparisonOptions,
-												pixelGroupWidth, pixelGroupHeight, pageX, pageY, blockX, blockY);
-									} else if (bufferedImageMask.getRGB(blockX, blockY) == Color.TRANSLUCENT) {
-										// logger.debug("Not a masked pixel.");
-
-										pixelCheckResults = checkthePixel(bufferedImageToCompare,
-												bufferedPrimordialImage, theDiffImage, comparisonOptions,
-												pixelGroupWidth, pixelGroupHeight, pageX, pageY, blockX, blockY);
-
-									}
-
-									if (pixelCheckResults != null) {
-										// Flag to stop crawling this block
-										innerErrorFound = pixelCheckResults.isErrorFound();
-										if (innerErrorFound) {
-											// Set Overall Flag
-											isSame = false;
-											break;
-
-										}
-									}
-
-								}
-							} else {
-								break; // Break loop to stop handling a mismatch
-							}
-						}
-
-						// Increment block Y-Axis
-						pageY += pixelGroupHeight;
-					}
-					// Increment block X-Axis
-					pageX += pixelGroupWidth;
-				}
-
-				// Create the Difference Image to be used
-				DifferenceImage differenceImage = new DifferenceImage(theDiffImage,
-						comparisonOptions.getDiffImageName() + comparisonOptions.getImageType().getExtension());
-				// Put the difference image into result list
-				allDifferenceImages.add(differenceImage);
-
-				// Only save diff if there is something different
-				if (!isSame) {
-					// Save the Image
-					comparisonOptions.getResultsDestination().writeImage(differenceImage,
-							comparisonOptions.getImageType());
-				}
-
-			} else { // Comparable image is not the same size as the primordial
-				logger.info("Image " + primordialImage.getName() + " is not the same size as the Primordial Image.");
-				// Set Flag
-				isSame = false;
-			}
-		}
-
-		ComparisonResult result = new ComparisonResult(comparableImageNames, primordialImage.getName(), isSame,
-				allDifferenceImages);
+		// Get Results
+		ComparisonResult result = new ComparisonResult(variables.getComparableImageNames(),
+				variables.getPrimordialImage().getName(), variables.isSame(), variables.getAllDifferenceImages());
 		return result;
 	}
 
@@ -319,10 +161,10 @@ public class Compare {
 	 * @param imageHeight
 	 * @return
 	 */
-	private int getPixelGroupHeight(ComparisonOptions comparisonOptions, int imageHeight) {
-		int height = comparisonOptions.getPixelGroupSize().getHeight();
+	private int getPixelGroupHeight(CompareVariables variables) {
+		int height = variables.getComparisonOptions().getPixelGroupSize().getHeight();
 		if (height < 0) {
-			height = imageHeight;
+			height = variables.getPrimordialImage().getImage().getHeight();
 		}
 		return height;
 	}
@@ -334,48 +176,188 @@ public class Compare {
 	 * @param imageWidth
 	 * @return
 	 */
-	private int getPixelGroupWidth(ComparisonOptions comparisonOptions, int imageWidth) {
-		int width = comparisonOptions.getPixelGroupSize().getWidth();
+	private int getPixelGroupWidth(CompareVariables variables) {
+		int width = variables.getComparisonOptions().getPixelGroupSize().getWidth();
 		if (width < 0) {
-			width = imageWidth;
+			width = variables.getPrimordialImage().getImage().getWidth();
 		}
 		return width;
 	}
 
-	/**
-	 * Compare the pixels based on its x & y and update the difference image if
-	 * there was an unmatching pixel.
-	 * 
-	 * @param bufferedImageToCompare
-	 * @param bufferedPrimordialImage
-	 * @param diffImage
-	 * @param comparisonOptions
-	 * @param pixelGroupSizeWidth
-	 * @param pixelGroupSizeHeight
-	 * @param pageX
-	 * @param pageY
-	 * @param blockX
-	 * @param blockY
-	 * @return
-	 */
-	private PixelCheckResults checkthePixel(BufferedImage bufferedImageToCompare, BufferedImage bufferedPrimordialImage,
-			BufferedImage diffImage, ComparisonOptions comparisonOptions, int pixelGroupSizeWidth,
-			int pixelGroupSizeHeight, int pageX, int pageY, int blockX, int blockY) {
+	private void compareEachComparableImage(CompareVariables variables, List<ComparableImage> comparableImages) {
+		for (ComparableImage imageToCompare : comparableImages) {
+			logger.debug("-- Comparing --");
 
-		boolean errorFound = false;
+			variables.setComparableImage(imageToCompare);
+			addComparableImageNameToList(variables); // Add the image name to the list
+
+			int primoridialWidth = variables.getPrimordialImage().getImage().getWidth();
+			int primoridialHeight = variables.getPrimordialImage().getImage().getHeight();
+
+			// Compare the image sizes
+			if ((variables.getComparableImage().getImage().getWidth() == primoridialWidth)
+					&& (variables.getComparableImage().getImage().getHeight() == primoridialHeight)) {
+
+				if (logger.isDebugEnabled()) {
+					// Determine Block ratio of area being compared for logging
+					int widthBlocksCount = (variables.getComparisonOptions().getEndX()
+							- variables.getComparisonOptions().getStartX()) / getPixelGroupWidth(variables);
+					int heightBlocksCount = (variables.getComparisonOptions().getEndY()
+							- variables.getComparisonOptions().getStartY()) / getPixelGroupHeight(variables);
+					logger.debug("Width block count: " + widthBlocksCount);
+					logger.debug("Height block count: " + heightBlocksCount);
+
+					logger.debug("Start X: " + variables.getComparisonOptions().getStartX());
+					logger.debug("Start Y: " + variables.getComparisonOptions().getStartY());
+					logger.debug("End X: " + variables.getComparisonOptions().getEndX());
+					logger.debug("End Y: " + variables.getComparisonOptions().getEndY());
+				}
+				// Define Counters
+				variables.setPageX(variables.getComparisonOptions().getStartX());
+				variables.setPageY(variables.getComparisonOptions().getStartY());
+
+				crawlImage(variables);
+
+				// Only save diff if there is something different
+				if (!variables.isSame()) {
+					createAndSaveDifferenceImage(variables);
+				}
+
+			} else { // Comparable image is not the same size as the primordial
+				logger.info("Image " + variables.getPrimordialImage().getName()
+						+ " is not the same size as the Primordial Image.");
+				// Set Flag
+				variables.setSame(false);
+			}
+		}
+	}
+
+	private void addComparableImageNameToList(CompareVariables variables) {
+		// Put the Image name in the list for the result
+		List<String> names = variables.getComparableImageNames();
+		names.add(variables.getComparableImage().getName());
+		variables.setComparableImageNames(names);
+	}
+
+	private void createDifferenceImage(CompareVariables variables) {
+		// Determine whether to create a Diff or a Mask
+		BufferedImage theDiffImage;
+		if (variables.getComparisonOptions().isCreateMask()) {
+			// Create a transparent image to be marked
+			theDiffImage = new BufferedImage(variables.getPrimordialImage().getImage().getWidth(),
+					variables.getPrimordialImage().getImage().getHeight(), variables.getPrimordialImage().getType());
+		} else {
+			// Use primordial image as background
+			theDiffImage = variables.getPrimordialImage().getImage();
+		}
+		variables.setDifferenceImage(
+				new DifferenceImage(theDiffImage, variables.getComparisonOptions().getDiffImageName()
+						+ variables.getComparisonOptions().getImageType().getExtension()));
+	}
+
+	private void crawlImage(CompareVariables variables) {
+		// Crawl the complete blocks X
+		while (variables.getPageX() < variables.getComparisonOptions().getEndX()) {
+			logger.debug("PageX: " + variables.getPageX());
+			variables.setPageY(variables.getComparisonOptions().getStartY()); // reset counter
+
+			// Crawl the complete blocks Y
+			while (variables.getPageY() < variables.getComparisonOptions().getEndY()) {
+
+				logger.debug("PageY: " + variables.getPageY());
+
+				createDifferenceImage(variables);
+				variables.setInnerErrorFound(false); // Set flag
+				crawlBlock(variables); // Crawl the block
+
+				// Increment block Y-Axis
+				variables.setPageY(variables.getPageY() + getPixelGroupHeight(variables));
+			}
+			// Increment block X-Axis
+			variables.setPageX(variables.getPageX() + getPixelGroupWidth(variables));
+		}
+	}
+
+	/**
+	 * Crawl a block (section of an image)
+	 * 
+	 * This method will traverse X & Y and check for any pixels that do not match.
+	 * If a pixel fails to match, any further pixels in the block will not be
+	 * compared, and the entire block will be marked as failed.
+	 * 
+	 * @param variables
+	 */
+	private void crawlBlock(CompareVariables variables) {
+		// Crawl inner block X
+		variables.setBlockX(variables.getPageX());
+		while (variables.getBlockX() < (variables.getPageX() + getPixelGroupWidth(variables))
+				&& variables.getBlockX() < variables.getComparisonOptions().getEndX()) {
+			logger.debug("BlockX: " + variables.getBlockX());
+			// Crawl inner block Y
+			variables.setBlockY(variables.getPageY());
+			while (variables.getBlockY() < (variables.getPageY() + getPixelGroupHeight(variables))
+					&& variables.getBlockY() < variables.getComparisonOptions().getEndY()) {
+				logger.debug("Checking pixel | " + variables.getBlockX() + ", " + variables.getBlockY());
+
+				variables.getComparisonOptions().getImageMask();
+				variables.getComparisonOptions().getImageMask().getImage();
+				logger.debug(variables.getComparisonOptions().getImageMask().getName());
+
+				// Ensure the area is not masked
+				if (variables.getComparisonOptions().getImageMask().getImage() == null
+						|| variables.getComparisonOptions().getImageMask().getImage().getRGB(variables.getBlockX(),
+								variables.getBlockY()) == Color.TRANSLUCENT) {
+					PixelCheckResults pixelCheckResults = checkthePixel(variables);
+
+					variables.setInnerErrorFound(pixelCheckResults.isErrorFound());
+					if (variables.isInnerErrorFound()) {
+						// Set Overall Flag
+						logger.debug("Failed Comparison | " + variables.getBlockX() + ", " + variables.getBlockY());
+						variables.setSame(false);
+						return;
+					}
+				}
+				variables.setBlockY(variables.getBlockY() + 1);
+			}
+			variables.setBlockX(variables.getBlockX() + 1);
+		}
+	}
+
+	public void createAndSaveDifferenceImage(CompareVariables variables) {
+
+		// Put the difference image into result list
+		List<DifferenceImage> allDifferenceImages = variables.getAllDifferenceImages();
+		allDifferenceImages.add(variables.getDifferenceImage());
+		variables.setAllDifferenceImages(allDifferenceImages);
+
+		// Save the Image
+		variables.getComparisonOptions().getResultsDestination().writeImage(variables.getDifferenceImage(),
+				variables.getComparisonOptions().getImageType());
+	}
+
+	/**
+	 * Compare a pixel based on its x & y. If the pixel does not match; mark the
+	 * corresponding pixel on the difference image.
+	 * 
+	 * The difference image is null if the pixels match
+	 * 
+	 * @param variables
+	 * @return PixelCheckResults
+	 */
+	private PixelCheckResults checkthePixel(CompareVariables variables) {
 
 		// Handle different pixel
-		if (bufferedImageToCompare.getRGB(blockX, blockY) != bufferedPrimordialImage.getRGB(blockX, blockY)) {
-
-			// logger.debug("Pixel does not match.");
+		if (variables.getComparableImage().getImage().getRGB(variables.getBlockX(), variables.getBlockY()) != variables
+				.getPrimordialImage().getImage().getRGB(variables.getBlockX(), variables.getBlockY())) {
+			BufferedImage diffImage = variables.getDifferenceImage().getImage();
+			logger.debug("Pixel does not match.");
 			Graphics2D g2d = diffImage.createGraphics();
-			g2d.setColor(comparisonOptions.getErrorColor());
-			g2d.fillRect(pageX, pageY, pixelGroupSizeWidth, pixelGroupSizeHeight);
+			g2d.setColor(variables.getComparisonOptions().getErrorColor());
+			g2d.fillRect(variables.getPageX(), variables.getPageY(), getPixelGroupWidth(variables),
+					getPixelGroupHeight(variables));
 			g2d.dispose();
-			errorFound = true;
 
 			// TODO find out which method is faster
-
 			/*
 			 * for (int modifyBlockX = pageX; modifyBlockX < (pageX + pixelGroupSizeWidth)
 			 * && blockX < comparisonOptions.getEndX(); modifyBlockX++) {
@@ -392,8 +374,10 @@ public class Compare {
 			 * }
 			 * }
 			 */
+
+			return new PixelCheckResults(diffImage, true);
 		}
-		return new PixelCheckResults(diffImage, errorFound);
+		return new PixelCheckResults(null, false);
 	}
 
 }

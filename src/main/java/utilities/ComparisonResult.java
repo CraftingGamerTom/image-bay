@@ -53,9 +53,9 @@ public class ComparisonResult {
 		String imageNames = comparableImageNames.toString();
 
 		if (isSame) {
-			logger.info(imageNames + " were all equal to the PrimordialImage.");
+			logger.info(imageNames + " were all equal to " + primordialImageName);
 		} else {
-			logger.info(imageNames + " were not ALL equal to PrimordialImage.");
+			logger.info(imageNames + " were not ALL equal to " + primordialImageName);
 
 			List<String> differenceImageNames = new ArrayList<String>();
 			for (DifferenceImage diff : allDifferenceImages) {

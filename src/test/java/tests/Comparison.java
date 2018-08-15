@@ -25,20 +25,20 @@ public class Comparison {
 
 	// Access Destination
 	private static Destination primordialImageDestination = new Destination(
-			Comparison.class.getClassLoader().getResource("primordial-images").getPath());
+			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/primordial-images");
 	private static Destination comparableImageDestination = new Destination(
-			Comparison.class.getClassLoader().getResource("comparable-images").getPath());
+			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/comparable-images");
 	private static Destination maskDestination = new Destination(
-			Comparison.class.getClassLoader().getResource("mask-images").getPath());
+			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/mask-images");
 	private static Destination resultsDestination = new Destination(
-			Comparison.class.getClassLoader().getResource("results").getPath());
+			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/results");
 
 	/**
 	 * Test that two identical images are found to be the same
 	 */
 	@Test
 	public void testIdentical4x4ImageAbsolute() {
-
+		System.out.println("testIdentical4x4ImageAbsolute");
 		// Create Images
 		String primordialImageName = "4x4-black-purple.png";
 		String comparableImageName = "4x4-black-purple-same.png";
@@ -59,6 +59,8 @@ public class Comparison {
 		// Get Results
 		List<ComparisonResult> allResults = compare.compareAllImages();
 		ComparisonResult result = allResults.get(0);
+
+		result.printResults();
 		assertTrue(result.isMatching());
 	}
 
@@ -67,6 +69,7 @@ public class Comparison {
 	 */
 	@Test
 	public void testIdentical50x50Image20x20() {
+		System.out.println("testIdentical50x50Image20x20");
 
 		// Create Images
 		String primordialImageName = "50x50-black-purple.png";
@@ -88,6 +91,8 @@ public class Comparison {
 		// Get Results
 		List<ComparisonResult> allResults = compare.compareAllImages();
 		ComparisonResult result = allResults.get(0);
+
+		result.printResults();
 		assertTrue(result.isMatching());
 	}
 
@@ -96,6 +101,7 @@ public class Comparison {
 	 */
 	@Test
 	public void testPartial50x50Identical20x20() {
+		System.out.println("testPartial50x50Identical20x20");
 
 		// Create Images
 		String primordialImageName = "50x50-black-purple.png";
@@ -121,6 +127,8 @@ public class Comparison {
 		// Get Results
 		List<ComparisonResult> allResults = compare.compareAllImages();
 		ComparisonResult result = allResults.get(0);
+
+		result.printResults();
 		assertTrue(result.isMatching());
 	}
 
@@ -129,6 +137,7 @@ public class Comparison {
 	 */
 	@Test
 	public void testDifferentSizedImages() {
+		System.out.println("testDifferentSizedImages");
 
 		// Create Images
 		String primordialImageName = "50x50-black-purple.png";
@@ -151,6 +160,8 @@ public class Comparison {
 		// Get Results
 		List<ComparisonResult> allResults = compare.compareAllImages();
 		ComparisonResult result = allResults.get(0);
+
+		result.printResults();
 		assertFalse(result.isMatching());
 	}
 
@@ -159,6 +170,7 @@ public class Comparison {
 	 */
 	@Test
 	public void test50x50CreateMask1x1() {
+		System.out.println("test50x50CreateMask1x1");
 
 		// Create Images
 		String primordialImageName = "50x50-black-purple.png";
@@ -171,7 +183,7 @@ public class Comparison {
 		// Set Options
 		ComparisonOptions options = new ComparisonOptions();
 		options.setDiffImageName("test50x50CreateMask1x1-mask");
-		options.setResultsDestination(resultsDestination);
+		options.setResultsDestination(maskDestination);
 		options.setPixelGroupSize(PixelGroupSize.P_1x1);
 		options.setCreateMask(true);
 
@@ -189,6 +201,7 @@ public class Comparison {
 		ComparisonOptions compareOptions = new ComparisonOptions();
 		compareOptions.setErrorColor(Color.BLUE);
 		compareOptions.setDiffImageName("test50x50CreateMask1x1-diff");
+		compareOptions.setResultsDestination(resultsDestination);
 		compareOptions.setImageMask(
 				new ImageMask(result.getDifferenceImage(0).getImage(), result.getDifferenceImage(0).getName()));
 		compareOptions.setPixelGroupSize(PixelGroupSize.P_1x1);
@@ -211,6 +224,7 @@ public class Comparison {
 	 */
 	@Test
 	public void test50x50CreateMask20x20() {
+		System.out.println("test50x50CreateMask20x20");
 
 		// Create Images
 		String primordialImageName = "50x50-black-purple.png";
@@ -223,7 +237,7 @@ public class Comparison {
 		// Set Options
 		ComparisonOptions options = new ComparisonOptions();
 		options.setDiffImageName("test50x50CreateMask20x20-mask");
-		options.setResultsDestination(resultsDestination);
+		options.setResultsDestination(maskDestination);
 		options.setCreateMask(true);
 		options.setPixelGroupSize(PixelGroupSize.P_20x20);
 
@@ -234,6 +248,7 @@ public class Comparison {
 		// Get Results
 		List<ComparisonResult> allResults = compare.compareAllImages();
 		ComparisonResult result = allResults.get(0);
+		result.printResults();
 
 		// ASSUMING COMPARISONS WORK
 		// Compare the two images again, using the mask created above
@@ -242,8 +257,8 @@ public class Comparison {
 		compareOptions.setResultsDestination(resultsDestination);
 		compareOptions.setErrorColor(Color.BLUE);
 		compareOptions.setDiffImageName("test50x50CreateMask20x20-diff");
-		compareOptions.setImageMask(
-				new ImageMask(result.getDifferenceImage(0).getImage(), result.getDifferenceImage(0).getName()));
+		compareOptions.setImageMask(new ImageMask(maskDestination.readImage("test50x50CreateMask20x20-mask.png"),
+				"test50x50CreateMask20x20-mask.png"));
 		compareOptions.setPixelGroupSize(PixelGroupSize.P_1x1);
 
 		resultComparer.putComparableImage(comparableImage, primordialImage, compareOptions);
@@ -252,6 +267,7 @@ public class Comparison {
 		ComparisonResult compareResultsResult = allCompareResultsResults.get(0);
 
 		// Assert that the mask worked and the image 'matches'
+		compareResultsResult.printResults();
 		assertTrue(compareResultsResult.isMatching());
 	}
 
