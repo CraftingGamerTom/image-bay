@@ -8,7 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
-import java.util.List;
+import java.io.File;
 
 import org.junit.Test;
 
@@ -17,27 +17,31 @@ import entity.Compare;
 import images.ComparableImage;
 import images.ImageMask;
 import images.PrimordialImage;
+import utilities.ComparableGroup;
 import utilities.ComparisonOptions;
 import utilities.ComparisonResult;
 import utilities.Destination;
+import utilities.ImageGroup;
 
 public class Comparison {
 
 	// Access Destination
 	private static Destination primordialImageDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/primordial-images");
+			new File("src/test/resources/primordial-images").getAbsolutePath());
 	private static Destination comparableImageDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/comparable-images");
+			new File("src/test/resources/comparable-images").getAbsolutePath());
 	private static Destination maskDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/mask-images");
+			new File("src/test/resources/mask-images").getAbsolutePath());
 	private static Destination resultsDestination = new Destination(
-			"/media/tcrokicki/MainDrive/workspaces/BLUSTREAM/image-bay/src/test/resources/results");
+			new File("src/test/resources/results").getAbsolutePath());
 
 	/**
 	 * Test that two identical images are found to be the same
 	 */
 	@Test
 	public void testIdentical4x4ImageAbsolute() {
+		System.out.println(maskDestination);
+
 		System.out.println("testIdentical4x4ImageAbsolute");
 		// Create Images
 		String primordialImageName = "4x4-black-purple.png";
@@ -53,13 +57,11 @@ public class Comparison {
 		options.setPixelGroupSize(PixelGroupSize.ABSOLUTE);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
-
+		// Handle Results
 		result.printResults();
 		assertTrue(result.isMatching());
 	}
@@ -85,12 +87,9 @@ public class Comparison {
 		options.setPixelGroupSize(PixelGroupSize.P_20x20);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
-
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
 		result.printResults();
 		assertTrue(result.isMatching());
@@ -121,12 +120,9 @@ public class Comparison {
 		options.setPixelGroupSize(PixelGroupSize.P_20x20);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
-
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
 		result.printResults();
 		assertTrue(result.isMatching());
@@ -154,12 +150,9 @@ public class Comparison {
 		options.setPixelGroupSize(PixelGroupSize.ABSOLUTE);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
-
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
 		result.printResults();
 		assertFalse(result.isMatching());
@@ -188,32 +181,29 @@ public class Comparison {
 		options.setCreateMask(true);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
+		result.printResults();
 
 		// ASSUMING COMPARISONS WORK
 		// Compare the two images again, using the mask created above
-		Compare resultComparer = new Compare();
 		ComparisonOptions compareOptions = new ComparisonOptions();
 		compareOptions.setErrorColor(Color.BLUE);
 		compareOptions.setDiffImageName("test50x50CreateMask1x1-diff");
 		compareOptions.setResultsDestination(resultsDestination);
-		compareOptions.setImageMask(
-				new ImageMask(result.getDifferenceImage(0).getImage(), result.getDifferenceImage(0).getName()));
+		compareOptions.setImageMask(new ImageMask(maskDestination.readImage("test50x50CreateMask1x1-mask.png"),
+				"test50x50CreateMask1x1-mask.png"));
 		compareOptions.setPixelGroupSize(PixelGroupSize.P_1x1);
 
-		resultComparer.putComparableImage(comparableImage, primordialImage, compareOptions);
-
-		List<ComparisonResult> allCompareResultsResults = resultComparer.compareAllImages();
-		ComparisonResult compareResultsResult = allCompareResultsResults.get(0);
+		// Compare
+		ComparableGroup maskedComparableGroup = new ComparableGroup(imageGroup, compareOptions);
+		ComparisonResult resultWithMask = Compare.compareImage(maskedComparableGroup);
 
 		// Assert that the mask worked and the image 'matches'
-		compareResultsResult.printResults();
-		assertTrue(compareResultsResult.isMatching());
+		resultWithMask.printResults();
+		assertTrue(resultWithMask.isMatching());
 	}
 
 	/**
@@ -242,17 +232,14 @@ public class Comparison {
 		options.setPixelGroupSize(PixelGroupSize.P_20x20);
 
 		// Compare
-		Compare compare = new Compare();
-		compare.putComparableImage(comparableImage, primordialImage, options);
+		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
+		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
+		ComparisonResult result = Compare.compareImage(comparableGroup);
 
-		// Get Results
-		List<ComparisonResult> allResults = compare.compareAllImages();
-		ComparisonResult result = allResults.get(0);
 		result.printResults();
 
 		// ASSUMING COMPARISONS WORK
 		// Compare the two images again, using the mask created above
-		Compare resultComparer = new Compare();
 		ComparisonOptions compareOptions = new ComparisonOptions();
 		compareOptions.setResultsDestination(resultsDestination);
 		compareOptions.setErrorColor(Color.BLUE);
@@ -261,14 +248,13 @@ public class Comparison {
 				"test50x50CreateMask20x20-mask.png"));
 		compareOptions.setPixelGroupSize(PixelGroupSize.P_1x1);
 
-		resultComparer.putComparableImage(comparableImage, primordialImage, compareOptions);
-
-		List<ComparisonResult> allCompareResultsResults = resultComparer.compareAllImages();
-		ComparisonResult compareResultsResult = allCompareResultsResults.get(0);
+		// Compare
+		ComparableGroup maskedComparableGroup = new ComparableGroup(imageGroup, compareOptions);
+		ComparisonResult resultWithMask = Compare.compareImage(maskedComparableGroup);
 
 		// Assert that the mask worked and the image 'matches'
-		compareResultsResult.printResults();
-		assertTrue(compareResultsResult.isMatching());
+		resultWithMask.printResults();
+		assertTrue(resultWithMask.isMatching());
 	}
 
 }

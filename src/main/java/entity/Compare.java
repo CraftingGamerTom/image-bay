@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import images.ComparableImage;
 import images.DifferenceImage;
-import images.PrimordialImage;
 import utilities.ComparableGroup;
 import utilities.ComparisonOptions;
 import utilities.ComparisonResult;
@@ -24,104 +23,41 @@ import utilities.PixelCheckResults;
 public class Compare {
 	final static Logger logger = Logger.getLogger(Compare.class);
 
-	private List<ComparableGroup> listToCompare;
-
-	public Compare() {
-		listToCompare = new ArrayList<ComparableGroup>();
-	}
-
 	/**
-	 * Puts image into the list to be compared against the primordial image.
+	 * Compare a single comparable group.
 	 * 
-	 * By default the images will be compared absolutely. One different pixel
-	 * will return false
-	 * 
-	 * @param comparableImage
-	 * @param primordialImage
+	 * @param comparableGroup
+	 * @return ComparisonResult containing the results of the run
 	 */
-	public void putComparableImage(ComparableImage comparableImage, PrimordialImage primordialImage) {
-		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
-		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, new ComparisonOptions());
+	public static ComparisonResult compareImage(ComparableGroup comparableGroup) {
 
-		listToCompare.add(comparableGroup);
-
-	}
-
-	/**
-	 * 
-	 * Puts image into the list to be compared against the primordial image.
-	 * 
-	 * @param comparableImage
-	 * @param primordialImage
-	 * @param options
-	 *            The options that will specifically be used to compare the two
-	 *            images provided
-	 */
-	public void putComparableImage(ComparableImage comparableImage, PrimordialImage primordialImage,
-			ComparisonOptions options) {
-		ImageGroup imageGroup = new ImageGroup(comparableImage, primordialImage);
-		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
-
-		listToCompare.add(comparableGroup);
-	}
-
-	/**
-	 * Put all the comparable images into the list to be compared against the
-	 * primordial image
-	 * 
-	 * @param comparableImageList
-	 * @param primordialImage
-	 */
-	public void putAllComparableImages(List<ComparableImage> comparableImageList, PrimordialImage primordialImage) {
-		ImageGroup imageGroup = new ImageGroup(comparableImageList, primordialImage);
-		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, new ComparisonOptions());
-
-		listToCompare.add(comparableGroup);
-	}
-
-	/**
-	 * Put all the comparable images into the list to be compared against the
-	 * primordial image
-	 * 
-	 * @param comparableImageList
-	 * @param primordialImage
-	 * @param options
-	 */
-	public void putAllComparableImages(List<ComparableImage> comparableImageList, PrimordialImage primordialImage,
-			ComparisonOptions options) {
-		ImageGroup imageGroup = new ImageGroup(comparableImageList, primordialImage);
-		ComparableGroup comparableGroup = new ComparableGroup(imageGroup, options);
-
-		listToCompare.add(comparableGroup);
-	}
-
-	public ComparisonResult compareImage(ComparableGroup comparableGroup) {
-
-		ComparisonResult results = null;
 		try {
-			results = compare(comparableGroup);
+			return compare(comparableGroup);
 		} catch (Exception e) {
 			// TODO Handle Exceptions
 			logger.error("An error occured when comparing an image.", e);
+			throw e;
 		}
-		return results;
 	}
 
-	public List<ComparisonResult> compareAllImages() {
-
+	/**
+	 * Compare all the images that were put into the list of images to compare
+	 * 
+	 * @return
+	 */
+	public static List<ComparisonResult> compareImages(List<ComparableGroup> comparableGroups) {
 		List<ComparisonResult> comparisonResultList = new ArrayList<ComparisonResult>();
 
-		ComparisonResult result = null;
-		for (ComparableGroup comparableGroup : listToCompare) {
-			try {
-				result = compare(comparableGroup);
-				comparisonResultList.add(result);
-			} catch (Exception e) {
-				// TODO Handle Exceptions
-				logger.error("An error occured when comparing an image.", e);
+		try {
+			for (ComparableGroup comparableGroup : comparableGroups) {
+				comparisonResultList.add(compare(comparableGroup));
 			}
+			return comparisonResultList;
+		} catch (Exception e) {
+			// TODO Handle Exceptions
+			logger.error("An error occured when comparing an image.", e);
+			throw e;
 		}
-		return comparisonResultList;
 	}
 
 	/**
@@ -131,9 +67,10 @@ public class Compare {
 	 * image is not created
 	 * 
 	 * @param comparableGroup
-	 * @return
+	 * @return ComparisonResults containing the difference image and a boolean value
+	 *         of whether the images matched or not
 	 */
-	private ComparisonResult compare(ComparableGroup comparableGroup) {
+	private static ComparisonResult compare(ComparableGroup comparableGroup) {
 		logger.debug("Begin comparing images.");
 		CompareVariables variables = new CompareVariables();
 
@@ -161,7 +98,7 @@ public class Compare {
 	 * @param imageHeight
 	 * @return
 	 */
-	private int getPixelGroupHeight(CompareVariables variables) {
+	private static int getPixelGroupHeight(CompareVariables variables) {
 		int height = variables.getComparisonOptions().getPixelGroupSize().getHeight();
 		if (height < 0) {
 			height = variables.getPrimordialImage().getImage().getHeight();
@@ -176,7 +113,7 @@ public class Compare {
 	 * @param imageWidth
 	 * @return
 	 */
-	private int getPixelGroupWidth(CompareVariables variables) {
+	private static int getPixelGroupWidth(CompareVariables variables) {
 		int width = variables.getComparisonOptions().getPixelGroupSize().getWidth();
 		if (width < 0) {
 			width = variables.getPrimordialImage().getImage().getWidth();
@@ -184,22 +121,25 @@ public class Compare {
 		return width;
 	}
 
-	private void compareEachComparableImage(CompareVariables variables, List<ComparableImage> comparableImages) {
+	/**
+	 * Iterate through each comparable group and compare
+	 * 
+	 * @param variables
+	 * @param comparableImages
+	 */
+	private static void compareEachComparableImage(CompareVariables variables, List<ComparableImage> comparableImages) {
 		for (ComparableImage imageToCompare : comparableImages) {
-			logger.debug("-- Comparing --");
+			logger.debug("Comparing " + imageToCompare.getName() + " to " + variables.getPrimordialImage().getName());
 
 			variables.setComparableImage(imageToCompare);
 			addComparableImageNameToList(variables); // Add the image name to the list
 
-			int primoridialWidth = variables.getPrimordialImage().getImage().getWidth();
-			int primoridialHeight = variables.getPrimordialImage().getImage().getHeight();
-
-			// Compare the image sizes
-			if ((variables.getComparableImage().getImage().getWidth() == primoridialWidth)
-					&& (variables.getComparableImage().getImage().getHeight() == primoridialHeight)) {
+			boolean imageSizesMatch = ensureImageSizesMatch(variables);
+			if (imageSizesMatch) {
 
 				if (logger.isDebugEnabled()) {
 					// Determine Block ratio of area being compared for logging
+					logger.debug("Comparison details: ");
 					int widthBlocksCount = (variables.getComparisonOptions().getEndX()
 							- variables.getComparisonOptions().getStartX()) / getPixelGroupWidth(variables);
 					int heightBlocksCount = (variables.getComparisonOptions().getEndY()
@@ -211,6 +151,7 @@ public class Compare {
 					logger.debug("Start Y: " + variables.getComparisonOptions().getStartY());
 					logger.debug("End X: " + variables.getComparisonOptions().getEndX());
 					logger.debug("End Y: " + variables.getComparisonOptions().getEndY());
+					logger.debug("End comparison details.");
 				}
 				// Define Counters
 				variables.setPageX(variables.getComparisonOptions().getStartX());
@@ -220,42 +161,75 @@ public class Compare {
 
 				// Only save diff if there is something different
 				if (!variables.isSame()) {
-					createAndSaveDifferenceImage(variables);
+					saveDifferenceImage(variables);
 				}
-
-			} else { // Comparable image is not the same size as the primordial
-				logger.info("Image " + variables.getPrimordialImage().getName()
-						+ " is not the same size as the Primordial Image.");
-				// Set Flag
-				variables.setSame(false);
+			} else {
+				// TODO Handle image sizes do not match
 			}
+
 		}
 	}
 
-	private void addComparableImageNameToList(CompareVariables variables) {
+	/**
+	 * Check that the images are the same size.
+	 * 
+	 * isSame flag is set to false if the images are not the same size
+	 * 
+	 * @param variables
+	 * @return true if the images are the same size, false if not the same size
+	 */
+	private static boolean ensureImageSizesMatch(CompareVariables variables) {
+		int primoridialWidth = variables.getPrimordialImage().getImage().getWidth();
+		int primoridialHeight = variables.getPrimordialImage().getImage().getHeight();
+
+		// Compare the image sizes
+		if ((variables.getComparableImage().getImage().getWidth() == primoridialWidth)
+				&& (variables.getComparableImage().getImage().getHeight() == primoridialHeight)) {
+			return true;
+		} else {
+			logger.info("Image sizes do not match.");
+			variables.setSame(false); // Set Flag
+			return false;
+		}
+	}
+
+	/**
+	 * Add the comparable image's name to the list of names.
+	 * 
+	 * Gets the list, adds the name to it, then saves the list
+	 * 
+	 * @param variables
+	 */
+	private static void addComparableImageNameToList(CompareVariables variables) {
 		// Put the Image name in the list for the result
 		List<String> names = variables.getComparableImageNames();
 		names.add(variables.getComparableImage().getName());
 		variables.setComparableImageNames(names);
 	}
 
-	private void createDifferenceImage(CompareVariables variables) {
-		// Determine whether to create a Diff or a Mask
-		BufferedImage theDiffImage;
-		if (variables.getComparisonOptions().isCreateMask()) {
-			// Create a transparent image to be marked
-			theDiffImage = new BufferedImage(variables.getPrimordialImage().getImage().getWidth(),
-					variables.getPrimordialImage().getImage().getHeight(), variables.getPrimordialImage().getType());
-		} else {
-			// Use primordial image as background
-			theDiffImage = variables.getPrimordialImage().getImage();
-		}
-		variables.setDifferenceImage(
-				new DifferenceImage(theDiffImage, variables.getComparisonOptions().getDiffImageName()
-						+ variables.getComparisonOptions().getImageType().getExtension()));
+	/**
+	 * Save the difference image to the desired result destination
+	 * 
+	 * @param variables
+	 */
+	public static void saveDifferenceImage(CompareVariables variables) {
+
+		// Put the difference image into result list
+		List<DifferenceImage> allDifferenceImages = variables.getAllDifferenceImages();
+		allDifferenceImages.add(variables.getDifferenceImage());
+		variables.setAllDifferenceImages(allDifferenceImages);
+
+		// Save the Image
+		variables.getComparisonOptions().getResultsDestination().writeImage(variables.getDifferenceImage(),
+				variables.getComparisonOptions().getImageType());
 	}
 
-	private void crawlImage(CompareVariables variables) {
+	/**
+	 * Method to increment pixel by pixel
+	 * 
+	 * @param variables
+	 */
+	private static void crawlImage(CompareVariables variables) {
 		// Crawl the complete blocks X
 		while (variables.getPageX() < variables.getComparisonOptions().getEndX()) {
 			logger.debug("PageX: " + variables.getPageX());
@@ -279,6 +253,28 @@ public class Compare {
 	}
 
 	/**
+	 * Initialize the difference image to be used if there is a failure during the
+	 * comparison
+	 * 
+	 * @param variables
+	 */
+	private static void createDifferenceImage(CompareVariables variables) {
+		// Determine whether to create a Diff or a Mask
+		BufferedImage theDiffImage;
+		if (variables.getComparisonOptions().isCreateMask()) {
+			// Create a transparent image to be marked
+			theDiffImage = new BufferedImage(variables.getPrimordialImage().getImage().getWidth(),
+					variables.getPrimordialImage().getImage().getHeight(), variables.getPrimordialImage().getType());
+		} else {
+			// Use primordial image as background
+			theDiffImage = variables.getPrimordialImage().getImage();
+		}
+		variables.setDifferenceImage(
+				new DifferenceImage(theDiffImage, variables.getComparisonOptions().getDiffImageName()
+						+ variables.getComparisonOptions().getImageType().getExtension()));
+	}
+
+	/**
 	 * Crawl a block (section of an image)
 	 * 
 	 * This method will traverse X & Y and check for any pixels that do not match.
@@ -287,7 +283,7 @@ public class Compare {
 	 * 
 	 * @param variables
 	 */
-	private void crawlBlock(CompareVariables variables) {
+	private static void crawlBlock(CompareVariables variables) {
 		// Crawl inner block X
 		variables.setBlockX(variables.getPageX());
 		while (variables.getBlockX() < (variables.getPageX() + getPixelGroupWidth(variables))
@@ -323,18 +319,6 @@ public class Compare {
 		}
 	}
 
-	public void createAndSaveDifferenceImage(CompareVariables variables) {
-
-		// Put the difference image into result list
-		List<DifferenceImage> allDifferenceImages = variables.getAllDifferenceImages();
-		allDifferenceImages.add(variables.getDifferenceImage());
-		variables.setAllDifferenceImages(allDifferenceImages);
-
-		// Save the Image
-		variables.getComparisonOptions().getResultsDestination().writeImage(variables.getDifferenceImage(),
-				variables.getComparisonOptions().getImageType());
-	}
-
 	/**
 	 * Compare a pixel based on its x & y. If the pixel does not match; mark the
 	 * corresponding pixel on the difference image.
@@ -344,7 +328,7 @@ public class Compare {
 	 * @param variables
 	 * @return PixelCheckResults
 	 */
-	private PixelCheckResults checkthePixel(CompareVariables variables) {
+	private static PixelCheckResults checkthePixel(CompareVariables variables) {
 
 		// Handle different pixel
 		if (variables.getComparableImage().getImage().getRGB(variables.getBlockX(), variables.getBlockY()) != variables
