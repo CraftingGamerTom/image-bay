@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
  * @author Thomas Rokicki
  *
  */
-public class AlphaImage extends CommonImage {
-	public AlphaImage(BufferedImage image, String imageName) {
+public class PrimordialImage extends CommonImage {
+	public PrimordialImage(BufferedImage image, String imageName) {
 		super(image, imageName);
 	}
 }

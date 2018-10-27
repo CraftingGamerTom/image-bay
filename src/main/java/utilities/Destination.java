@@ -53,7 +53,7 @@ public class Destination {
 	public void writeImage(CommonImage image, ImageType imageType) {
 		if (path != null) {
 			try {
-				ImageIO.write(image.getImage(), imageType.getType(), new File(path + "\\" + image.getName()));
+				ImageIO.write(image.getImage(), imageType.getType(), new File(path + File.separator + image.getName()));
 			} catch (IOException ioe) {
 				logger.error(
 						"Could not write the image to the desired destination. Enable debug mode for more information.");
@@ -76,7 +76,7 @@ public class Destination {
 	public BufferedImage readImage(String imageName) {
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File(path + "\\" + imageName));
+			image = ImageIO.read(new File(path + File.separator + imageName));
 		} catch (IOException ioe) {
 			logger.error("IOException thrown when reading image. Enable debug mode for more information.");
 			if (logger.isDebugEnabled()) {
@@ -84,6 +84,11 @@ public class Destination {
 			}
 		}
 		return image;
+	}
+
+	@Override
+	public String toString() {
+		return path;
 	}
 
 }

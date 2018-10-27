@@ -7,8 +7,8 @@ package utilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import images.AlphaImage;
 import images.ComparableImage;
+import images.PrimordialImage;
 
 /**
  * Class to store images that are meant to be compared against each other
@@ -19,19 +19,19 @@ import images.ComparableImage;
 public class ImageGroup {
 
 	private List<ComparableImage> comparableImages;
-	private AlphaImage alphaImage;
+	private PrimordialImage primordialImage;
 
 	/**
 	 * Image group
 	 * 
 	 * @param comparableImageList
 	 *            a List of ComparableImage(s)
-	 * @param alphaImage
+	 * @param primordialImage
 	 *            The image the comparableImage(s) will be compared to.
 	 */
-	public ImageGroup(List<ComparableImage> comparableImageList, AlphaImage alphaImage) {
+	public ImageGroup(List<ComparableImage> comparableImageList, PrimordialImage primordialImage) {
 		this.comparableImages = comparableImageList;
-		this.alphaImage = alphaImage;
+		this.primordialImage = primordialImage;
 	}
 
 	/**
@@ -39,22 +39,22 @@ public class ImageGroup {
 	 * 
 	 * @param comparableImageList
 	 *            a ComparableImage
-	 * @param alphaImage
+	 * @param primordialImage
 	 *            The image the comparableImage will be compared to.
 	 */
-	public ImageGroup(ComparableImage comparableImage, AlphaImage alphaImage) {
+	public ImageGroup(ComparableImage comparableImage, PrimordialImage primordialImage) {
 		comparableImages = new ArrayList<ComparableImage>();
 		comparableImages.add(comparableImage);
-		this.alphaImage = alphaImage;
+		this.primordialImage = primordialImage;
 	}
 
 	/**
-	 * Gets the alpha image for the group.
+	 * Gets the primordial image for the group.
 	 * 
-	 * @return AlphaImage
+	 * @return PrimordialImage
 	 */
-	public AlphaImage getAlphaImage() {
-		return alphaImage;
+	public PrimordialImage getPrimordialImage() {
+		return primordialImage;
 	}
 
 	/**

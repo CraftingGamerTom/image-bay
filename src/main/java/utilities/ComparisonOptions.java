@@ -7,9 +7,9 @@ package utilities;
 import java.awt.Color;
 
 import abettor.ImageType;
-import abettor.Precision;
-import images.AlphaImage;
+import abettor.PixelGroupSize;
 import images.ImageMask;
+import images.PrimordialImage;
 
 /**
  * Class to maintain all the set options for the comparison
@@ -24,8 +24,8 @@ public class ComparisonOptions {
 	private int endX;
 	private int endY;
 	private ImageMask imageMask;
-	private Precision precision;
-	private int errorColor;
+	private PixelGroupSize pixelGroupSize;
+	private Color errorColor;
 	private Destination resultsDestination;
 	private String diffImageName;
 	private ImageType imageType;
@@ -40,7 +40,7 @@ public class ComparisonOptions {
 	 *           endX = -1;
 	 *           endY = -1;
 	 *           imageMask = null;
-	 *           precision = Precision.ABSOLUTE;
+	 *           pixelGroupSize = PixelGroupSize.ABSOLUTE;
 	 *           errorColor = Color.RED.getRGB();
 	 *           destination = null;
 	 *           diffImageName = ">-diff";
@@ -58,8 +58,8 @@ public class ComparisonOptions {
 		endX = -1;
 		endY = -1;
 		imageMask = null;
-		precision = Precision.ABSOLUTE;
-		errorColor = Color.RED.getRGB();
+		pixelGroupSize = PixelGroupSize.ABSOLUTE;
+		errorColor = Color.RED;
 		resultsDestination = null;
 		diffImageName = ">-diff";
 		imageType = ImageType.PNG;
@@ -131,20 +131,20 @@ public class ComparisonOptions {
 		this.imageMask = imageMask;
 	}
 
-	public Precision getPrecision() {
-		return precision;
+	public PixelGroupSize getPixelGroupSize() {
+		return pixelGroupSize;
 	}
 
 	/**
 	 * Set the block size to check
 	 * 
-	 * @param precision
+	 * @param pixelGroupSize
 	 */
-	public void setPrecision(Precision precision) {
-		this.precision = precision;
+	public void setPixelGroupSize(PixelGroupSize pixelGroupSize) {
+		this.pixelGroupSize = pixelGroupSize;
 	}
 
-	public int getErrorColor() {
+	public Color getErrorColor() {
 		return errorColor;
 	}
 
@@ -153,7 +153,7 @@ public class ComparisonOptions {
 	 * 
 	 * @param errorColor
 	 */
-	public void setErrorColor(int errorColor) {
+	public void setErrorColor(Color errorColor) {
 		this.errorColor = errorColor;
 	}
 
@@ -176,7 +176,7 @@ public class ComparisonOptions {
 
 	/**
 	 * Get the difference image naming convention. We have designated the symbol
-	 * '>' to represent the alpha image's name. It will be inserted at run
+	 * '>' to represent the primordial image's name. It will be inserted at run
 	 * time.
 	 * 
 	 * Ex: ">-diff" will result in "ImageName-diff"
@@ -222,21 +222,21 @@ public class ComparisonOptions {
 	 * called to ensure the required values are valid and are no longer default.
 	 * 
 	 * @param options
-	 * @param alphaImage
+	 * @param primordialImage
 	 * @return
 	 */
-	public static ComparisonOptions validateDefaults(ComparisonOptions options, AlphaImage alphaImage) {
-		// Alpha Image Size for size comparing
-		int alphaWidth = alphaImage.getImage().getWidth();
-		int alphaHeight = alphaImage.getImage().getHeight();
+	public static ComparisonOptions validateDefaults(ComparisonOptions options, PrimordialImage primordialImage) {
+		// Primordial Image Size for size comparing
+		int primordialWidth = primordialImage.getImage().getWidth();
+		int primordialHeight = primordialImage.getImage().getHeight();
 
 		// Update the naming convention
 		options.setDiffImageName(options.getDiffImageName().replaceAll(">",
-				alphaImage.getName().substring(0, alphaImage.getName().indexOf('.'))));
+				primordialImage.getName().substring(0, primordialImage.getName().indexOf('.'))));
 		// Update the EndX
-		options.setEndX(alphaWidth);
+		options.setEndX(primordialWidth);
 		// Update the EndY
-		options.setEndY(alphaHeight);
+		options.setEndY(primordialHeight);
 		// Update the ImageMask
 		if (options.getImageMask() == null) {
 			options.setImageMask(new ImageMask(null, "NullMask"));
