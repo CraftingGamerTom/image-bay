@@ -2,14 +2,14 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package utilities;
+package com.craftinggamertom.image_bay.utilities;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import images.DifferenceImage;
+import com.craftinggamertom.image_bay.images.DifferenceImage;
 
 /**
  * ComparisonResult object maintains information from the image comparison that

@@ -2,14 +2,14 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package utilities;
+package com.craftinggamertom.image_bay.utilities;
 
 import java.awt.Color;
 
-import abettor.ImageType;
-import abettor.PixelGroupSize;
-import images.ImageMask;
-import images.PrimordialImage;
+import com.craftinggamertom.image_bay.abettor.ImageType;
+import com.craftinggamertom.image_bay.abettor.PixelGroupSize;
+import com.craftinggamertom.image_bay.images.ImageMask;
+import com.craftinggamertom.image_bay.images.PrimordialImage;
 
 /**
  * Class to maintain all the set options for the comparison

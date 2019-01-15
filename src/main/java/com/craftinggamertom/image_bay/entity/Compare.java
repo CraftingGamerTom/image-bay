@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package entity;
+package com.craftinggamertom.image_bay.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,15 +12,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import exceptions.InvalidImageSizeException;
-import images.ComparableImage;
-import images.DifferenceImage;
-import utilities.ComparableGroup;
-import utilities.ComparisonOptions;
-import utilities.ComparisonResult;
-import utilities.Destination;
-import utilities.ImageGroup;
-import utilities.PixelCheckResults;
+import com.craftinggamertom.image_bay.exceptions.InvalidImageSizeException;
+import com.craftinggamertom.image_bay.images.ComparableImage;
+import com.craftinggamertom.image_bay.images.DifferenceImage;
+import com.craftinggamertom.image_bay.utilities.ComparableGroup;
+import com.craftinggamertom.image_bay.utilities.ComparisonOptions;
+import com.craftinggamertom.image_bay.utilities.ComparisonResult;
+import com.craftinggamertom.image_bay.utilities.Destination;
+import com.craftinggamertom.image_bay.utilities.ImageGroup;
+import com.craftinggamertom.image_bay.utilities.PixelCheckResults;
 
 public class Compare {
 	final static Logger logger = Logger.getLogger(Compare.class);

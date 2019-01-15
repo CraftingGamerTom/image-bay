@@ -2,15 +2,15 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package entity;
+package com.craftinggamertom.image_bay.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import images.ComparableImage;
-import images.DifferenceImage;
-import images.PrimordialImage;
-import utilities.ComparisonOptions;
+import com.craftinggamertom.image_bay.images.ComparableImage;
+import com.craftinggamertom.image_bay.images.DifferenceImage;
+import com.craftinggamertom.image_bay.images.PrimordialImage;
+import com.craftinggamertom.image_bay.utilities.ComparisonOptions;
 
 public class CompareVariables {
 
