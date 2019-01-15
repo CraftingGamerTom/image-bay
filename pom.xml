@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.craftinggamertom</groupId>
 	<artifactId>image-bay</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Image Bay</name>
 	<description>Advanced Screenshot Comparisons</description>
 

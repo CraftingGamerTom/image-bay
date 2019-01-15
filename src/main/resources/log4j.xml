@@ -14,7 +14,7 @@
 	<appender name="workingDir"
 		class="org.apache.log4j.RollingFileAppender">
 		<param name="append" value="false" />
-		<param name="maxFileSize" value="10KB" />
+		<param name="maxFileSize" value="5MB" />
 		<param name="maxBackupIndex" value="14" />
 		<!-- For Tomcat -->
 		<param name="file"
@@ -31,7 +31,7 @@
 	</logger>
 	<root>
 		<!-- <level value="trace" /> -->
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="console" />
 		<appender-ref ref="workingDir" />
 	</root>
