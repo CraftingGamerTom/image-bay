@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package images;
+package com.craftinggamertom.image_bay.images;
 
 import java.awt.image.BufferedImage;
 

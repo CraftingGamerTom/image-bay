@@ -2,13 +2,13 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package utilities;
+package com.craftinggamertom.image_bay.utilities;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import images.ComparableImage;
-import images.PrimordialImage;
+import com.craftinggamertom.image_bay.images.ComparableImage;
+import com.craftinggamertom.image_bay.images.PrimordialImage;
 
 /**
  * Class to store images that are meant to be compared against each other

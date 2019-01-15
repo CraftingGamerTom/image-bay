@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package abettor;
+package com.craftinggamertom.image_bay.abettor;
 
 import org.apache.log4j.Logger;
 

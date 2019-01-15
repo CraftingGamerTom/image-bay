@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package utilities;
+package com.craftinggamertom.image_bay.utilities;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,8 +12,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import abettor.ImageType;
-import images.CommonImage;
+import com.craftinggamertom.image_bay.abettor.ImageType;
+import com.craftinggamertom.image_bay.images.CommonImage;
 
 /**
  * Class that stores the location for where an image should be put on the file

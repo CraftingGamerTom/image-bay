@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package utilities;
+package com.craftinggamertom.image_bay.utilities;
 
 /**
  * Object holding the images and the information needed to compare two images.

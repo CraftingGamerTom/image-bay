@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Thomas Rokicki
  */
 
-package exceptions;
+package com.craftinggamertom.image_bay.exceptions;
 
 public class InvalidImageSizeException extends Exception {
 	/**

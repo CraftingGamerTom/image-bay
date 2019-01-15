@@ -12,17 +12,17 @@ import java.io.File;
 
 import org.junit.Test;
 
-import abettor.PixelGroupSize;
-import entity.Compare;
-import exceptions.InvalidImageSizeException;
-import images.ComparableImage;
-import images.ImageMask;
-import images.PrimordialImage;
-import utilities.ComparableGroup;
-import utilities.ComparisonOptions;
-import utilities.ComparisonResult;
-import utilities.Destination;
-import utilities.ImageGroup;
+import com.craftinggamertom.image_bay.abettor.PixelGroupSize;
+import com.craftinggamertom.image_bay.entity.Compare;
+import com.craftinggamertom.image_bay.exceptions.InvalidImageSizeException;
+import com.craftinggamertom.image_bay.images.ComparableImage;
+import com.craftinggamertom.image_bay.images.ImageMask;
+import com.craftinggamertom.image_bay.images.PrimordialImage;
+import com.craftinggamertom.image_bay.utilities.ComparableGroup;
+import com.craftinggamertom.image_bay.utilities.ComparisonOptions;
+import com.craftinggamertom.image_bay.utilities.ComparisonResult;
+import com.craftinggamertom.image_bay.utilities.Destination;
+import com.craftinggamertom.image_bay.utilities.ImageGroup;
 
 public class Comparison {
 
