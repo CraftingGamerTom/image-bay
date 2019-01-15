@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import abettor.PixelGroupSize;
 import entity.Compare;
+import exceptions.InvalidImageSizeException;
 import images.ComparableImage;
 import images.ImageMask;
 import images.PrimordialImage;
@@ -37,9 +38,11 @@ public class Comparison {
 
 	/**
 	 * Test that two identical images are found to be the same
+	 * 
+	 * @throws InvalidImageSizeException
 	 */
 	@Test
-	public void testIdentical4x4ImageAbsolute() {
+	public void testIdentical4x4ImageAbsolute() throws InvalidImageSizeException {
 		System.out.println(maskDestination);
 
 		System.out.println("testIdentical4x4ImageAbsolute");
@@ -68,9 +71,11 @@ public class Comparison {
 
 	/**
 	 * Test that two identical images are found to be the same
+	 * 
+	 * @throws InvalidImageSizeException
 	 */
 	@Test
-	public void testIdentical50x50Image20x20() {
+	public void testIdentical50x50Image20x20() throws InvalidImageSizeException {
 		System.out.println("testIdentical50x50Image20x20");
 
 		// Create Images
@@ -97,9 +102,11 @@ public class Comparison {
 
 	/**
 	 * Test that partial area of two identical images are found to be the same
+	 * 
+	 * @throws InvalidImageSizeException
 	 */
 	@Test
-	public void testPartial50x50Identical20x20() {
+	public void testPartial50x50Identical20x20() throws InvalidImageSizeException {
 		System.out.println("testPartial50x50Identical20x20");
 
 		// Create Images
@@ -130,9 +137,11 @@ public class Comparison {
 
 	/**
 	 * Test that different sized images are found to be different
+	 * 
+	 * @throws InvalidImageSizeException
 	 */
 	@Test
-	public void testDifferentSizedImages() {
+	public void testDifferentSizedImages() throws InvalidImageSizeException {
 		System.out.println("testDifferentSizedImages");
 
 		// Create Images
@@ -160,9 +169,11 @@ public class Comparison {
 
 	/**
 	 * Test that a mask is created properly based on images that do not match
+	 * 
+	 * @throws InvalidImageSizeException
 	 */
 	@Test
-	public void test50x50CreateMask1x1() {
+	public void test50x50CreateMask1x1() throws InvalidImageSizeException {
 		System.out.println("test50x50CreateMask1x1");
 
 		// Create Images
@@ -211,9 +222,11 @@ public class Comparison {
 	 * 
 	 * Mask is created with a 20x20 pixel group size then compared 1x1
 	 * 
+	 * @throws InvalidImageSizeException
+	 * 
 	 */
 	@Test
-	public void test50x50CreateMask20x20() {
+	public void test50x50CreateMask20x20() throws InvalidImageSizeException {
 		System.out.println("test50x50CreateMask20x20");
 
 		// Create Images

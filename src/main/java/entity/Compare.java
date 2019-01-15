@@ -12,11 +12,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import exceptions.InvalidImageSizeException;
 import images.ComparableImage;
 import images.DifferenceImage;
 import utilities.ComparableGroup;
 import utilities.ComparisonOptions;
 import utilities.ComparisonResult;
+import utilities.Destination;
 import utilities.ImageGroup;
 import utilities.PixelCheckResults;
 
@@ -28,11 +30,14 @@ public class Compare {
 	 * 
 	 * @param comparableGroup
 	 * @return ComparisonResult containing the results of the run
+	 * @throws InvalidImageSizeException
 	 */
-	public static ComparisonResult compareImage(ComparableGroup comparableGroup) {
+	public static ComparisonResult compareImage(ComparableGroup comparableGroup) throws InvalidImageSizeException {
 
 		try {
 			return compare(comparableGroup);
+		} catch (InvalidImageSizeException e) {
+			throw e;
 		} catch (Exception e) {
 			// TODO Handle Exceptions
 			logger.error("An error occured when comparing an image.", e);
@@ -44,8 +49,10 @@ public class Compare {
 	 * Compare all the images that were put into the list of images to compare
 	 * 
 	 * @return
+	 * @throws InvalidImageSizeException
 	 */
-	public static List<ComparisonResult> compareImages(List<ComparableGroup> comparableGroups) {
+	public static List<ComparisonResult> compareImages(List<ComparableGroup> comparableGroups)
+			throws InvalidImageSizeException {
 		List<ComparisonResult> comparisonResultList = new ArrayList<ComparisonResult>();
 
 		try {
@@ -53,6 +60,8 @@ public class Compare {
 				comparisonResultList.add(compare(comparableGroup));
 			}
 			return comparisonResultList;
+		} catch (InvalidImageSizeException e) {
+			throw e;
 		} catch (Exception e) {
 			// TODO Handle Exceptions
 			logger.error("An error occured when comparing an image.", e);
@@ -69,9 +78,10 @@ public class Compare {
 	 * @param comparableGroup
 	 * @return ComparisonResults containing the difference image and a boolean value
 	 *         of whether the images matched or not
+	 * @throws InvalidImageSizeException
 	 */
-	private static ComparisonResult compare(ComparableGroup comparableGroup) {
-		logger.debug("Begin comparing images.");
+	private static ComparisonResult compare(ComparableGroup comparableGroup) throws InvalidImageSizeException {
+		// logger.trace("Begin comparing images.");
 		CompareVariables variables = new CompareVariables();
 
 		// Get Images
@@ -126,47 +136,45 @@ public class Compare {
 	 * 
 	 * @param variables
 	 * @param comparableImages
+	 * @throws InvalidImageSizeException
 	 */
-	private static void compareEachComparableImage(CompareVariables variables, List<ComparableImage> comparableImages) {
+	private static void compareEachComparableImage(CompareVariables variables, List<ComparableImage> comparableImages)
+			throws InvalidImageSizeException {
 		for (ComparableImage imageToCompare : comparableImages) {
 			logger.debug("Comparing " + imageToCompare.getName() + " to " + variables.getPrimordialImage().getName());
 
 			variables.setComparableImage(imageToCompare);
 			addComparableImageNameToList(variables); // Add the image name to the list
 
-			boolean imageSizesMatch = ensureImageSizesMatch(variables);
-			if (imageSizesMatch) {
+			// Check for unmatching image size
+			ensureImageSizesMatch(variables);
 
-				if (logger.isDebugEnabled()) {
-					// Determine Block ratio of area being compared for logging
-					logger.debug("Comparison details: ");
-					int widthBlocksCount = (variables.getComparisonOptions().getEndX()
-							- variables.getComparisonOptions().getStartX()) / getPixelGroupWidth(variables);
-					int heightBlocksCount = (variables.getComparisonOptions().getEndY()
-							- variables.getComparisonOptions().getStartY()) / getPixelGroupHeight(variables);
-					logger.debug("Width block count: " + widthBlocksCount);
-					logger.debug("Height block count: " + heightBlocksCount);
+			if (logger.isTraceEnabled()) {
+				// Determine Block ratio of area being compared for logging
+				logger.trace("Comparison details: ");
+				int widthBlocksCount = (variables.getComparisonOptions().getEndX()
+						- variables.getComparisonOptions().getStartX()) / getPixelGroupWidth(variables);
+				int heightBlocksCount = (variables.getComparisonOptions().getEndY()
+						- variables.getComparisonOptions().getStartY()) / getPixelGroupHeight(variables);
+				logger.trace("Width block count: " + widthBlocksCount);
+				logger.trace("Height block count: " + heightBlocksCount);
 
-					logger.debug("Start X: " + variables.getComparisonOptions().getStartX());
-					logger.debug("Start Y: " + variables.getComparisonOptions().getStartY());
-					logger.debug("End X: " + variables.getComparisonOptions().getEndX());
-					logger.debug("End Y: " + variables.getComparisonOptions().getEndY());
-					logger.debug("End comparison details.");
-				}
-				// Define Counters
-				variables.setPageX(variables.getComparisonOptions().getStartX());
-				variables.setPageY(variables.getComparisonOptions().getStartY());
-
-				crawlImage(variables);
-
-				// Only save diff if there is something different
-				if (!variables.isSame()) {
-					saveDifferenceImage(variables);
-				}
-			} else {
-				// TODO Handle image sizes do not match
+				logger.trace("Start X: " + variables.getComparisonOptions().getStartX());
+				logger.trace("Start Y: " + variables.getComparisonOptions().getStartY());
+				logger.trace("End X: " + variables.getComparisonOptions().getEndX());
+				logger.trace("End Y: " + variables.getComparisonOptions().getEndY());
+				logger.trace("End comparison details.");
 			}
+			// Define Counters
+			variables.setPageX(variables.getComparisonOptions().getStartX());
+			variables.setPageY(variables.getComparisonOptions().getStartY());
 
+			crawlImage(variables);
+
+			// Only save diff if there is something different
+			if (!variables.isSame()) {
+				saveDifferenceImage(variables);
+			}
 		}
 	}
 
@@ -177,19 +185,28 @@ public class Compare {
 	 * 
 	 * @param variables
 	 * @return true if the images are the same size, false if not the same size
+	 * @throws InvalidImageSizeException
 	 */
-	private static boolean ensureImageSizesMatch(CompareVariables variables) {
+	private static void ensureImageSizesMatch(CompareVariables variables) throws InvalidImageSizeException {
 		int primoridialWidth = variables.getPrimordialImage().getImage().getWidth();
 		int primoridialHeight = variables.getPrimordialImage().getImage().getHeight();
 
 		// Compare the image sizes
 		if ((variables.getComparableImage().getImage().getWidth() == primoridialWidth)
 				&& (variables.getComparableImage().getImage().getHeight() == primoridialHeight)) {
-			return true;
+			// Compare mask image size to left
+			BufferedImage maskImage = variables.getComparisonOptions().getImageMask().getImage();
+			// If mask image is null then ignore
+			if (maskImage != null) {
+				// If mask image size matches continue
+				if ((maskImage.getWidth() != primoridialWidth) || (maskImage.getHeight() != primoridialHeight)) {
+					variables.setSame(false); // Set Flag
+					throw new InvalidImageSizeException("Mask image size does not match");
+				}
+			}
 		} else {
-			logger.info("Image sizes do not match.");
 			variables.setSame(false); // Set Flag
-			return false;
+			throw new InvalidImageSizeException("Image sizes do not match.");
 		}
 	}
 
@@ -219,9 +236,12 @@ public class Compare {
 		allDifferenceImages.add(variables.getDifferenceImage());
 		variables.setAllDifferenceImages(allDifferenceImages);
 
-		// Save the Image
-		variables.getComparisonOptions().getResultsDestination().writeImage(variables.getDifferenceImage(),
-				variables.getComparisonOptions().getImageType());
+		// Save the Image (if destination is not null)
+		Destination differenceDestination = variables.getComparisonOptions().getResultsDestination();
+		if (differenceDestination != null) {
+			differenceDestination.writeImage(variables.getDifferenceImage(),
+					variables.getComparisonOptions().getImageType());
+		}
 	}
 
 	/**
@@ -232,13 +252,13 @@ public class Compare {
 	private static void crawlImage(CompareVariables variables) {
 		// Crawl the complete blocks X
 		while (variables.getPageX() < variables.getComparisonOptions().getEndX()) {
-			logger.debug("PageX: " + variables.getPageX());
+			// logger.debug("PageX: " + variables.getPageX());
 			variables.setPageY(variables.getComparisonOptions().getStartY()); // reset counter
 
 			// Crawl the complete blocks Y
 			while (variables.getPageY() < variables.getComparisonOptions().getEndY()) {
 
-				logger.debug("PageY: " + variables.getPageY());
+				// logger.debug("PageY: " + variables.getPageY());
 
 				createDifferenceImage(variables);
 				variables.setInnerErrorFound(false); // Set flag
@@ -288,27 +308,29 @@ public class Compare {
 		variables.setBlockX(variables.getPageX());
 		while (variables.getBlockX() < (variables.getPageX() + getPixelGroupWidth(variables))
 				&& variables.getBlockX() < variables.getComparisonOptions().getEndX()) {
-			logger.debug("BlockX: " + variables.getBlockX());
+			// logger.debug("BlockX: " + variables.getBlockX());
 			// Crawl inner block Y
 			variables.setBlockY(variables.getPageY());
 			while (variables.getBlockY() < (variables.getPageY() + getPixelGroupHeight(variables))
 					&& variables.getBlockY() < variables.getComparisonOptions().getEndY()) {
-				logger.debug("Checking pixel | " + variables.getBlockX() + ", " + variables.getBlockY());
+				// logger.debug("Checking pixel | " + variables.getBlockX() + ", " +
+				// variables.getBlockY());
 
 				variables.getComparisonOptions().getImageMask();
 				variables.getComparisonOptions().getImageMask().getImage();
-				logger.debug(variables.getComparisonOptions().getImageMask().getName());
+				// logger.debug(variables.getComparisonOptions().getImageMask().getName());
 
 				// Ensure the area is not masked
-				if (variables.getComparisonOptions().getImageMask().getImage() == null
-						|| variables.getComparisonOptions().getImageMask().getImage().getRGB(variables.getBlockX(),
-								variables.getBlockY()) == Color.TRANSLUCENT) {
+				BufferedImage maskImage = variables.getComparisonOptions().getImageMask().getImage();
+				if (maskImage == null
+						|| maskImage.getRGB(variables.getBlockX(), variables.getBlockY()) == Color.TRANSLUCENT) {
 					PixelCheckResults pixelCheckResults = checkthePixel(variables);
 
 					variables.setInnerErrorFound(pixelCheckResults.isErrorFound());
 					if (variables.isInnerErrorFound()) {
 						// Set Overall Flag
-						logger.debug("Failed Comparison | " + variables.getBlockX() + ", " + variables.getBlockY());
+						// logger.debug("Failed Comparison | " + variables.getBlockX() + ", " +
+						// variables.getBlockY());
 						variables.setSame(false);
 						return;
 					}
@@ -334,7 +356,7 @@ public class Compare {
 		if (variables.getComparableImage().getImage().getRGB(variables.getBlockX(), variables.getBlockY()) != variables
 				.getPrimordialImage().getImage().getRGB(variables.getBlockX(), variables.getBlockY())) {
 			BufferedImage diffImage = variables.getDifferenceImage().getImage();
-			logger.debug("Pixel does not match.");
+			// logger.debug("Pixel does not match.");
 			Graphics2D g2d = diffImage.createGraphics();
 			g2d.setColor(variables.getComparisonOptions().getErrorColor());
 			g2d.fillRect(variables.getPageX(), variables.getPageY(), getPixelGroupWidth(variables),
