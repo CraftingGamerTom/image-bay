@@ -34,22 +34,12 @@ public class ComparisonOptions {
 	/**
 	 * Create the ComparisonOptions object with default values
 	 * 
-	 * @category
-	 * 			startX = -1;
-	 *           startY = -1;
-	 *           endX = -1;
-	 *           endY = -1;
-	 *           imageMask = null;
-	 *           pixelGroupSize = PixelGroupSize.ABSOLUTE;
-	 *           errorColor = Color.RED.getRGB();
-	 *           destination = null;
-	 *           diffImageName = ">-diff";
-	 *           imageType = ImageType.PNG;
-	 *           createMask = false;
+	 * @category startX = -1; startY = -1; endX = -1; endY = -1; imageMask = null;
+	 *           pixelGroupSize = PixelGroupSize.ABSOLUTE; errorColor =
+	 *           Color.RED.getRGB(); destination = null; diffImageName = ">-diff";
+	 *           imageType = ImageType.PNG; createMask = false;
 	 * 
-	 * @category
-	 * 			THE FOLLOWING VARIABLES MUST BE SET BY THE USER:
-	 *           Destination
+	 * @category THE FOLLOWING VARIABLES MUST BE SET BY THE USER: Destination
 	 * 
 	 */
 	public ComparisonOptions() {
@@ -175,9 +165,8 @@ public class ComparisonOptions {
 	}
 
 	/**
-	 * Get the difference image naming convention. We have designated the symbol
-	 * '>' to represent the primordial image's name. It will be inserted at run
-	 * time.
+	 * Get the difference image naming convention. We have designated the symbol '>'
+	 * to represent the primordial image's name. It will be inserted at run time.
 	 * 
 	 * Ex: ">-diff" will result in "ImageName-diff"
 	 * 
@@ -205,11 +194,10 @@ public class ComparisonOptions {
 	}
 
 	/**
-	 * Set whether a mask should be created or not.
-	 * Default is false
+	 * Set whether a mask should be created or not. Default is false
 	 * 
-	 * If this is set to true, the difference image will not have the original
-	 * image behind it. The background will be transparent.
+	 * If this is set to true, the difference image will not have the original image
+	 * behind it. The background will be transparent.
 	 * 
 	 * @param createMask
 	 */
@@ -218,8 +206,8 @@ public class ComparisonOptions {
 	}
 
 	/**
-	 * When the ComparisonOptions are about to be used, this method should be
-	 * called to ensure the required values are valid and are no longer default.
+	 * When the ComparisonOptions are about to be used, this method should be called
+	 * to ensure the required values are valid and are no longer default.
 	 * 
 	 * @param options
 	 * @param primordialImage
@@ -231,8 +219,7 @@ public class ComparisonOptions {
 		int primordialHeight = primordialImage.getImage().getHeight();
 
 		// Update the naming convention
-		options.setDiffImageName(options.getDiffImageName().replaceAll(">",
-				primordialImage.getName().substring(0, primordialImage.getName().indexOf('.'))));
+		options.setDiffImageName(options.getDiffImageName().replace(">", primordialImage.getName()));
 		// Update the EndX
 		options.setEndX(primordialWidth);
 		// Update the EndY
